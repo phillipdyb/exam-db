@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Databaser Quiz – IDATT2002</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>📦 Databaser Quiz</h1>
+  <p>IDATT2002 – NTNU Eksamensforberedelse</p>
+  <div class="exam-info">
+    <span class="badge warn">⚠️ Eksamen 22. mai 2026</span>
+    <span class="badge">Kode E – ingen hjelpemidler</span>
+    <span class="badge">4 timer</span>
+    <span class="badge">40% ER/Relmod · 40% SQL · 20% Diverse</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- START SCREEN -->
+  <div id="start-screen">
+
+    <div class="plan-section">
+      <h2>// 3-dagers plan (19–21 mai + eksamen 22. mai)</h2>
+      <div class="day-block">
+        <h3><span class="day-label">DAG 1 – Tirsdag 19/5</span> Datamodellering &amp; Relasjonsmodellen (40%)</h3>
+        <ul>
+          <li>Les ER-diagram-teori: entiteter, relasjoner, attributter, multiplisitet (0..1, 1..*, 0..*)</li>
+          <li>Øv på å oversette ER → relasjonell form (tabeller, primærnøkler, fremmednøkler)</li>
+          <li>Gjennomgå eksamen v24 oppg. 1 (bomstasjon) og v25 oppg. 1 (stillinger)</li>
+          <li>Quiz: kategori «ER &amp; Relasjonsmodell» her</li>
+        </ul>
+      </div>
+      <div class="day-block">
+        <h3><span class="day-label">DAG 2 – Onsdag 20/5</span> SQL – SELECT, JOIN, aggregering (40%)</h3>
+        <ul>
+          <li>SELECT med WHERE, GROUP BY, HAVING, ORDER BY</li>
+          <li>INNER JOIN, LEFT JOIN – øv med bok/forfatter og fotball-datasettene</li>
+          <li>Subqueries (IN, NOT IN), COUNT, MIN, MAX, SUM, AVG</li>
+          <li>Gjennomgå eksamen v24 oppg. 2 (lærested/studier) og v25 oppg. 2 (blomster)</li>
+          <li>Quiz: kategori «SQL» her</li>
+        </ul>
+      </div>
+      <div class="day-block">
+        <h3><span class="day-label">DAG 3 – Torsdag 21/5</span> Normalisering, transaksjoner &amp; NoSQL (20%)</h3>
+        <ul>
+          <li>1NF, 2NF, 3NF – kjenn definisjonene og typiske brudd</li>
+          <li>ACID-egenskaper, transaksjoner, låsing, dirty read, deadlock</li>
+          <li>JSON i databaser: fordeler/ulemper vs. normalisert struktur</li>
+          <li>NoSQL-typer: dokument, key-value, graf, kolonnebasert</li>
+          <li>Quiz: kategori «Normalisering &amp; Teori» her</li>
+        </ul>
+      </div>
+      <div class="day-block">
+        <h3><span class="day-label">EKSAMENSDAGEN – Fredag 22/5 🎯</span></h3>
+        <ul>
+          <li>Gjennomgå én eksamensoppgave som helhet (tidsbestemt, maks 4 timer)</li>
+          <li>Les gjennom relasjonell form og ER-notasjon én gang</li>
+          <li>Ikke lær noe nytt – befest det du kan</li>
+        </ul>
+      </div>
+      <div class="tip-box">
+        <strong>Tips:</strong> Eksamen har alltid samme struktur: Oppg. 1 = ER-diagram → relmod + SQL-spørring + normalisering. Oppg. 2 = ren SQL på gitte tabeller. Oppg. 3 = teorioppgave (JSON/XML + 3NF-analyse). Lær malen utenat.
+      </div>
+    </div>
+
+    <h2 style="font-family:'JetBrains Mono',monospace; color:var(--text2); font-size:0.85rem; margin-bottom:1rem;">// Velg kategori å øve på:</h2>
+    <div class="category-grid">
+      <div class="category-card" onclick="startCategory('er')">
+        <div class="cat-icon">🗺️</div>
+        <h3>ER &amp; Relasjonsmodell</h3>
+        <p>Entiteter, relasjoner, multiplisitet, oversettelse til relmod</p>
+      </div>
+      <div class="category-card" onclick="startCategory('sql')">
+        <div class="cat-icon">🔍</div>
+        <h3>SQL</h3>
+        <p>SELECT, JOIN, GROUP BY, subqueries, aggregatfunksjoner</p>
+      </div>
+      <div class="category-card" onclick="startCategory('norm')">
+        <div class="cat-icon">📐</div>
+        <h3>Normalisering &amp; Teori</h3>
+        <p>1NF/2NF/3NF, ACID, transaksjoner, NoSQL, JSON</p>
+      </div>
+      <div class="category-card" onclick="startCategory('all')">
+        <div class="cat-icon">🎯</div>
+        <h3>Alt blandet</h3>
+        <p>Tilfeldig blanding av alle kategorier – simulerer eksamen</p>
+      </div>
+    </div>
+    <div class="start-buttons">
+      <button class="btn btn-primary" onclick="startAll()">Start alle spørsmål</button>
+      <button class="btn btn-secondary" onclick="startRandom(20)">20 tilfeldige</button>
+      <button class="btn btn-secondary" onclick="startRandom(10)">10 tilfeldige</button>
+    </div>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div id="quiz-screen">
+    <div class="quiz-header">
+      <div class="progress-info" id="progress-info">Spørsmål 1 av 20</div>
+      <div class="category-tag" id="category-tag">ER</div>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-bar" style="width:0%"></div>
+    </div>
+    <div class="question-card">
+      <h2 id="question-text"></h2>
+      <div id="code-area"></div>
+      <ul class="options-list" id="options-list"></ul>
+      <div class="feedback-box" id="feedback-box"></div>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn btn-secondary" onclick="goBack()">← Avslutt</button>
+      <button class="btn btn-primary" id="next-btn" onclick="nextQuestion()" style="display:none">Neste →</button>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="result-screen">
+    <div class="result-card">
+      <div class="score-big" id="score-big">0%</div>
+      <div class="score-label" id="score-label">0 av 0 riktige</div>
+      <div class="breakdown" id="breakdown"></div>
+    </div>
+    <div class="start-buttons">
+      <button class="btn btn-primary" onclick="showStart()">← Tilbake til meny</button>
+      <button class="btn btn-secondary" onclick="retryWrong()">Øv på feil</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
