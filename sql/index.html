@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQL – IDATT2002</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="icon" type="image/jpeg" href="/favicon.jpg">
+</head>
+<body>
+<header>
+  <h1>🔍 SQL</h1>
+  <p>IDATT2002 – NTNU Eksamensforberedelse</p>
+  <nav>
+    <a href="/">🏠 Hjem</a>
+    <a href="/teori">📚 Teori</a>
+    <a href="/er">🗺️ ER & Relmod</a>
+    <a href="/sql" class="active">🔍 SQL</a>
+    <a href="/norm">📐 Normalisering & Teori</a>
+  </nav>
+</header>
+
+<div class="container">
+<div class="theory-content">
+
+  <div class="section">
+    <h2>// SELECT – grunnstruktur</h2>
+    <p>Rekkefølgen på klausulene er fast og må følges:</p>
+    <div class="code-block">SELECT   kolonne(r)          -- hva vil du se?
+FROM     tabell              -- hvilken tabell?
+JOIN     ...                 -- koble inn andre tabeller
+WHERE    betingelse          -- filtrer rader (før gruppering)
+GROUP BY kolonne(r)          -- grupper radene
+HAVING   betingelse          -- filtrer grupper (etter gruppering)
+ORDER BY kolonne(r) ASC/DESC -- sorter resultatet</div>
+    <div class="callout warn">
+      <strong>Vanlig feil:</strong> WHERE kan ikke bruke aggregatfunksjoner (SUM, COUNT osv.). Bruk HAVING for det. WHERE filtrerer enkeltrad, HAVING filtrerer grupper.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>// JOIN</h2>
+    <p>JOIN brukes for å koble data fra flere tabeller basert på en felles kolonne.</p>
+
+    <h3>INNER JOIN</h3>
+    <p>Returnerer kun rader som har match i begge tabeller.</p>
+    <div class="code-block">SELECT a.navn, av.avd_navn
+FROM ANSATT a
+INNER JOIN AVDELING av ON a.avd_id = av.avd_id;</div>
+
+    <h3>LEFT JOIN</h3>
+    <p>Returnerer alle rader fra venstre tabell, med NULL for høyre tabell der det ikke er match. Nyttig for å finne rader uten tilknytning.</p>
+    <div class="code-block">-- Finn alle studier, også de uten søkere
+SELECT ls.studienavn, COUNT(ss.sokernr) AS antall_søkere
+FROM LÆRERSTED_STUDIUM ls
+LEFT JOIN SØKER_STUD ss ON ls.studid = ss.studid
+GROUP BY ls.studid, ls.studienavn;</div>
+
+    <div class="callout">
+      <strong>Huskeregel:</strong> Vil du finne rader som IKKE har en kobling? Bruk LEFT JOIN og sjekk WHERE høyretabell.id IS NULL.
+    </div>
+    <div class="code-block">-- Studier uten noen søkere
+SELECT ls.studienavn
+FROM LÆRERSTED_STUDIUM ls
+LEFT JOIN SØKER_STUD ss ON ls.studid = ss.studid
+WHERE ss.studid IS NULL;</div>
+  </div>
+
+  <div class="section">
+    <h2>// Aggregatfunksjoner</h2>
+    <span class="tag tag-exam">Eksamenrelevant</span>
+    <p>Disse er de eneste aggregatfunksjonene som er pensum:</p>
+    <ul>
+      <li><strong>COUNT(*)</strong> – teller alle rader inkl. NULL</li>
+      <li><strong>COUNT(kolonne)</strong> – teller rader der kolonnen ikke er NULL</li>
+      <li><strong>SUM(kolonne)</strong> – summerer verdier</li>
+      <li><strong>AVG(kolonne)</strong> – gjennomsnittsverdi</li>
+      <li><strong>MIN(kolonne)</strong> – laveste verdi</li>
+      <li><strong>MAX(kolonne)</strong> – høyeste verdi</li>
+    </ul>
+    <div class="code-block">-- Total inntekt og antall passeringer per stasjon
+-- men kun stasjoner med over 100 passeringer
+SELECT stasjon_id,
+       COUNT(*) AS antall_passeringer,
+       SUM(belop) AS total_inntekt
+FROM PASSERING
+GROUP BY stasjon_id
+HAVING COUNT(*) > 100
+ORDER BY total_inntekt DESC;</div>
+  </div>
+
+  <div class="section">
+    <h2>// Subqueries</h2>
+    <p>En subquery er en SELECT inni en annen SELECT. Brukes typisk med IN eller NOT IN.</p>
+
+    <h3>IN – finne rader med kobling</h3>
+    <div class="code-block">-- Studenter som har søkt på minst ett studie
+SELECT navn FROM STUDENT
+WHERE student_id IN (SELECT student_id FROM SØKNAD);</div>
+
+    <h3>NOT IN – finne rader uten kobling</h3>
+    <div class="code-block">-- Studier ingen har søkt på
+SELECT studienavn FROM LÆRERSTED_STUDIUM
+WHERE studid NOT IN (SELECT studid FROM SØKER_STUD);</div>
+
+    <div class="callout warn">
+      <strong>Obs:</strong> NOT IN med NULL-verdier kan gi uventede resultater. Hvis subqueryens kolonne kan inneholde NULL, bruk LEFT JOIN ... WHERE IS NULL i stedet.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>// CREATE VIEW</h2>
+    <span class="tag tag-exam">Eksamenrelevant</span>
+    <p>En VIEW er en lagret SELECT-spørring som oppfører seg som en virtuell tabell. Den lagrer ingen data – spørringen kjøres på nytt hver gang du bruker viewen.</p>
+    <div class="code-block">-- Opprett en view
+CREATE VIEW AKTIVE_BOMSTASJONER AS
+SELECT stasjon_id, navn, type
+FROM BOMSTASJON
+WHERE operativ_til IS NULL;
+
+-- Bruk viewen akkurat som en tabell
+SELECT * FROM AKTIVE_BOMSTASJONER;
+
+-- Bruk viewen i en JOIN
+SELECT ab.navn, COUNT(p.pas_id) AS antall
+FROM AKTIVE_BOMSTASJONER ab
+JOIN PASSERING p ON ab.stasjon_id = p.stasjon_id
+GROUP BY ab.stasjon_id;</div>
+    <p>Fordeler med VIEW: forenkler komplekse spørringer, kan brukes til tilgangskontroll (gi brukere tilgang til view, ikke rå tabeller).</p>
+  </div>
+
+  <div class="section">
+    <h2>// DISTINCT og NULL</h2>
+    <div class="code-block">-- Hent unike kjøretøytyper (ingen duplikater)
+SELECT DISTINCT kjøretøytype FROM KJØRETØY;
+
+-- NULL-sjekk – bruk IS NULL / IS NOT NULL, aldri = NULL
+SELECT * FROM ANSATT WHERE avd_id IS NULL;
+SELECT * FROM ANSATT WHERE avd_id IS NOT NULL;</div>
+  </div>
+
+  <div class="section">
+    <h2>// Eksempel fra eksamen v25 – Blomster</h2>
+    <span class="tag tag-exam">Fra tidligere eksamen</span>
+    <p>Gitt tabellene:</p>
+    <div class="code-block">BLOMST(<u>blomst_id</u>, navn, farge, pris)
+ORDRE(<u>ordre_id</u>, dato, kunde_id*)
+ORDRELINJE(<u>ordre_id*</u>, <u>blomst_id*</u>, antall)</div>
+
+    <div class="code-block">-- Total omsetning per blomst, kun blomster solgt mer enn 10 ganger
+SELECT b.navn, SUM(ol.antall * b.pris) AS omsetning
+FROM BLOMST b
+INNER JOIN ORDRELINJE ol ON b.blomst_id = ol.blomst_id
+GROUP BY b.blomst_id, b.navn
+HAVING SUM(ol.antall) > 10
+ORDER BY omsetning DESC;</div>
+
+    <div class="code-block">-- Blomster som aldri har blitt bestilt
+SELECT navn FROM BLOMST
+WHERE blomst_id NOT IN (SELECT blomst_id FROM ORDRELINJE);</div>
+  </div>
+
+  <a href="/?cat=sql" class="quiz-link-btn">🎯 Øv på SQL-spørsmål i quizen →</a>
+
+</div>
+</div>
+</body>
+</html>
