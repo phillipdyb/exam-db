@@ -3,10 +3,10 @@
     "cat": "er",
     "q": "Hva betyr multiplisiteten \"0..*\" på en relasjon i et ER-diagram?",
     "options": [
-      "Nøyaktig én instans er alltid tilknyttet",
-      "Null eller flere instanser kan være tilknyttet",
-      "Minst én instans må være tilknyttet",
-      "Maksimalt én instans kan være tilknyttet"
+      "Nøyaktig én instans må alltid være tilknyttet relasjonen",
+      "Null eller flere instanser kan være tilknyttet relasjonen",
+      "Minst én instans må alltid være tilknyttet relasjonen",
+      "Maksimalt én instans kan være tilknyttet relasjonen"
     ],
     "correct": 1,
     "explanation": "\"0..*\" betyr null eller mange – altså valgfri deltakelse og ubegrenset antall. Sammenlign med \"1..1\" (nøyaktig én) og \"1..*\" (minst én)."
@@ -15,22 +15,22 @@
     "cat": "er",
     "q": "Hva er en fremmednøkkel (foreign key)?",
     "options": [
-      "Et attributt som unikt identifiserer en rad i sin egen tabell",
+      "Et attributt som unikt identifiserer hver rad i sin egen tabell",
       "Et attributt som refererer til primærnøkkelen i en annen tabell",
-      "Et attributt som ikke kan ha NULL-verdier",
-      "Et attributt som automatisk øker med 1 for hver ny rad"
+      "Et attributt som aldri kan inneholde NULL-verdier i tabellen",
+      "Et attributt som automatisk øker med 1 for hver ny rad som settes inn"
     ],
     "correct": 1,
     "explanation": "En fremmednøkkel er et attributt (eller kombinasjon) som refererer til primærnøkkelen i en annen (eller samme) tabell. Den håndhever referanseintegritet."
   },
   {
     "cat": "er",
-    "q": "Du har ER-entiteten BOMSTASJON med attributter: navn, type, operativ_fra_dato, operativ_til_dato. Den tilhører BOMSELSKAP (1..1) og er på en LOKASJON (1..1). Hvilken av disse er mest naturlig primærnøkkel for BOMSTASJON?",
+    "q": "BOMSTASJON har attributter: navn, type, operativ_fra_dato, operativ_til_dato. Den tilhører ett BOMSELSKAP (1..1) og har én LOKASJON (1..1). Hva er mest naturlig primærnøkkel?",
     "options": [
-      "navn (bomstasjonens navn)",
-      "En kombinasjon av navn + operativ_fra_dato",
+      "navn, fordi det unikt beskriver stasjonen i dagligtale",
+      "En kombinasjon av type og operativ_fra_dato",
       "En auto-increment-kolonne, f.eks. stasjon_id",
-      "GPS_data fra LOKASJON"
+      "En kombinasjon av navn og operativ_fra_dato"
     ],
     "correct": 2,
     "explanation": "Navn kan være duplikat over tid, og navn+dato er uhensiktsmessig som FK andre steder. Et surrogat-id (AUTO_INCREMENT) er den beste løsningen for en stabil, enkel PK."
@@ -39,22 +39,22 @@
     "cat": "er",
     "q": "Hvordan oversetter du en mange-til-mange-relasjon fra ER-diagram til relasjonsmodellen?",
     "options": [
-      "Du legger fremmednøkkelen i begge tabeller",
+      "Du legger fremmednøkkelen til den ene tabellen inn i den andre",
       "Du oppretter en ny koblingstabell med fremmednøkler til begge tabeller",
-      "Du slår de to tabellene sammen til én",
-      "Du legger til et ekstra attributt i den ene tabellen"
+      "Du slår de to tabellene sammen til én felles tabell",
+      "Du legger til et teller-attributt i den tabellen med flest forekomster"
     ],
     "correct": 1,
     "explanation": "En M:N-relasjon realiseres som en koblingstabell (junction/associative table) som inneholder fremmednøkler til begge de involverte tabellene. Primærnøkkelen er typisk sammensatt av de to FK-ene."
   },
   {
     "cat": "er",
-    "q": "I eksamensoppgave v25 er INTERVJU knyttet til SØKER (0..*) og UTLYSNING (1..1). Hva betyr dette?",
+    "q": "INTERVJU er knyttet til SØKER med multiplisitet 0..* og til UTLYSNING med 1..1. Hva betyr dette for datamodellen?",
     "options": [
-      "Et intervju kan knyttes til mange utlysninger",
-      "En søker kan ha null eller mange intervjuer, og hvert intervju er knyttet til nøyaktig én utlysning",
-      "En utlysning kan ha null intervjuer",
-      "En søker deltar alltid i nøyaktig ett intervju"
+      "En søker kan delta i mange intervjuer, og ett intervju kan tilhøre mange utlysninger",
+      "En søker trenger ikke ha intervjuer, og hvert intervju tilhører nøyaktig én utlysning",
+      "Hvert intervju tilhører minst én utlysning, og en søker må ha minst ett intervju",
+      "En utlysning kan ha mange intervjuer, og hvert intervju tilhører én søker"
     ],
     "correct": 1,
     "explanation": "0..* på SØKER-siden betyr at en søker kan ha ingen eller mange intervjuer. 1..1 på UTLYSNING-siden betyr at hvert intervju alltid er knyttet til nøyaktig én utlysning."
@@ -63,181 +63,229 @@
     "cat": "er",
     "q": "Hva er forskjellen på entitetsintegritet og referanseintegritet?",
     "options": [
-      "Entitetsintegritet handler om at primærnøkler er unike og ikke NULL; referanseintegritet handler om at fremmednøkler peker til eksisterende rader",
-      "Det er ingen forskjell – begge sikrer at data er konsistente",
-      "Entitetsintegritet er kun for fremmednøkler; referanseintegritet er for primærnøkler",
-      "Entitetsintegritet handler om datatyper; referanseintegritet handler om NULL-verdier"
+      "Entitetsintegritet gjelder primærnøkler (unik, ikke NULL); referanseintegritet gjelder at fremmednøkler peker til eksisterende rader",
+      "Entitetsintegritet gjelder fremmednøkler; referanseintegritet gjelder at primærnøkler er unike",
+      "Entitetsintegritet handler om datatyper; referanseintegritet handler om NULL-verdier i tabeller",
+      "De er synonymer – begge sikrer at ingen rader kan slettes fra databasen"
     ],
     "correct": 0,
     "explanation": "Entitetsintegritet: hver rad i en tabell har en unik, ikke-NULL primærnøkkel. Referanseintegritet: en fremmednøkkelverdi må enten være NULL eller finnes som primærnøkkel i den tabellen den refererer til."
   },
   {
     "cat": "er",
-    "q": "Tabellene er på relasjonell form. Hva er riktig notasjon for å markere en fremmednøkkel?",
+    "q": "I relasjonell form (relmod-notasjon) – hva brukes for å markere henholdsvis primærnøkkel og fremmednøkkel?",
     "options": [
-      "Understreking av attributtet",
-      "# foran attributtnavnet",
-      "* etter attributtnavnet",
-      "Kursiv skrift"
+      "Primærnøkkel med kursiv, fremmednøkkel med fet skrift",
+      "Primærnøkkel med understreking, fremmednøkkel med * etter attributtnavnet",
+      "Primærnøkkel med # foran, fremmednøkkel med understreking",
+      "Primærnøkkel med stor forbokstav, fremmednøkkel med liten forbokstav"
     ],
-    "correct": 2,
-    "explanation": "I NTNU-kurset brukes * etter attributtnavnet for fremmednøkler, og understreking for primærnøkler. F.eks.: STILLING(stilling_id, fagområde, ansatt_id*)"
+    "correct": 1,
+    "explanation": "I NTNU-kurset brukes understreking for primærnøkler og * etter attributtnavnet for fremmednøkler. F.eks.: STILLING(stilling_id, fagområde, ansatt_id*)"
   },
   {
     "cat": "er",
-    "q": "Hva er en svak entitet (weak entity) i ER-modellering?",
+    "q": "Hva kjennetegner en svak entitet (weak entity) i ER-modellering?",
     "options": [
-      "En entitet uten noen attributter",
-      "En entitet som ikke kan eksistere alene – dens identitet avhenger av en annen entitet",
-      "En entitet med kun én forekomst i databasen",
-      "En entitet med bare NULL-verdier"
+      "Entiteten har ingen relasjoner til andre entiteter i diagrammet",
+      "Entiteten kan ikke eksistere alene – identiteten avhenger av en eierende entitet",
+      "Entiteten har kun ett attributt og ingen sammensatt nøkkel",
+      "Entiteten representerer valgfri deltakelse i alle sine relasjoner"
     ],
     "correct": 1,
     "explanation": "En svak entitet kan ikke identifiseres unikt uten sin \"eier\"-entitet. Eksempel: BESTILLINGSDETALJ avhenger av BESTILLING for sin identitet."
   },
   {
-    "cat": "sql",
-    "q": "Du vil hente alle studienavn fra LÆRERSTED_STUDIUM hvor lærested heter \"NTNU\". Hvilken spørring er riktig?",
-    "code": "LÆRESTED (laerid, navn, hoved_stedid*)\nLÆRERS_STUD (studid, studienavn, laerid*, ant_plasser, typeid*)",
+    "cat": "er",
+    "q": "ANSATT er superklasse i en EER-spesialisering med subklassene FAST_ANSATT og KONSULENT. Hvilken oversettelse til relasjonsmodellen er korrekt?",
     "options": [
-      "SELECT studienavn FROM LÆRERSTED WHERE navn = \"NTNU\";",
-      "SELECT studienavn FROM LÆRERSTED_STUDIUM WHERE laerid = \"NTNU\";",
-      "SELECT ls.studienavn FROM LÆRESTED l INNER JOIN LÆRERSTED_STUDIUM ls ON l.laerid = ls.laerid WHERE l.navn = \"NTNU\";",
-      "SELECT studienavn FROM LÆRERSTED_STUDIUM WHERE navn = \"NTNU\";"
+      "Lag én tabell ANSATT med en type-kolonne; ignorer subklassene i modellen",
+      "Lag ANSATT med fellesattributter og PK, og egne tabeller for subklassene med FK til ANSATT",
+      "Kopier alle ANSATT-attributter inn i FAST_ANSATT og KONSULENT; slett superklassen",
+      "Lag én stor tabell med alle attributter fra alle tre entitetene samlet"
     ],
-    "correct": 2,
-    "explanation": "studienavn finnes i LÆRERSTED_STUDIUM, mens navn=\"NTNU\" finnes i LÆRESTED. Du må bruke JOIN på laerid for å koble de to tabellene."
+    "correct": 1,
+    "explanation": "Standard oversettelse av spesialisering: superklassen (ANSATT) får sin egen tabell med PK og fellesattributter. Hver subklasse får sin tabell med egne attributter + FK til superklassens PK."
+  },
+  {
+    "cat": "er",
+    "q": "Hva er forskjellen på spesialisering og generalisering i EER?",
+    "options": [
+      "Spesialisering er bottom-up; generalisering er top-down fra superklasse til subklasser",
+      "Spesialisering er top-down (én → flere subklasser); generalisering er bottom-up (flere → felles superklasse)",
+      "Spesialisering brukes kun for svake entiteter; generalisering brukes for sterke entiteter",
+      "De produserer ulike diagrammer og kan ikke kombineres i samme modell"
+    ],
+    "correct": 1,
+    "explanation": "Spesialisering: du starter med én entitet og deler den i mer spesifikke subklasser (top-down). Generalisering: du starter med flere entiteter og finner felles egenskaper som danner en superklasse (bottom-up). Resultatet i diagrammet er det samme."
   },
   {
     "cat": "sql",
-    "q": "Hva returnerer COUNT(*) vs COUNT(kolonne)?",
+    "q": "Du vil hente studienavn for alle studier ved lærested med navn 'NTNU'. Tabellene er LÆRESTED(laerid, navn) og LÆRERSTED_STUDIUM(studid, studienavn, laerid*). Hvilken spørring er riktig?",
+    "code": "LÆRESTED (laerid, navn)\nLÆRERSTED_STUDIUM (studid, studienavn, laerid*, ant_plasser)",
     "options": [
-      "De returnerer alltid det samme",
+      "SELECT studienavn FROM LÆRESTED WHERE navn = 'NTNU';",
+      "SELECT studienavn FROM LÆRERSTED_STUDIUM WHERE laerid = 'NTNU';",
+      "SELECT ls.studienavn FROM LÆRESTED l INNER JOIN LÆRERSTED_STUDIUM ls ON l.laerid = ls.laerid WHERE l.navn = 'NTNU';",
+      "SELECT studienavn FROM LÆRESTED l, LÆRERSTED_STUDIUM ls WHERE l.navn = 'NTNU';"
+    ],
+    "correct": 2,
+    "explanation": "studienavn finnes i LÆRERSTED_STUDIUM, mens navn='NTNU' finnes i LÆRESTED. Du må bruke JOIN på laerid. Alternativ 4 mangler join-betingelsen mellom tabellene (kartesisk produkt)."
+  },
+  {
+    "cat": "sql",
+    "q": "Hva er forskjellen mellom COUNT(*) og COUNT(kolonne)?",
+    "options": [
+      "COUNT(*) teller kun unike rader; COUNT(kolonne) teller alle rader inkludert duplikater",
       "COUNT(*) teller alle rader inkl. NULL; COUNT(kolonne) teller kun rader der kolonnen ikke er NULL",
-      "COUNT(*) ignorerer duplikater; COUNT(kolonne) teller alle",
-      "COUNT(kolonne) er raskere enn COUNT(*)"
+      "COUNT(*) er raskere enn COUNT(kolonne) fordi den bruker indeks automatisk",
+      "COUNT(kolonne) teller alle rader; COUNT(*) teller kun rader uten NULL-verdier"
     ],
     "correct": 1,
     "explanation": "COUNT(*) teller absolutt alle rader i gruppen, inkludert de med NULL. COUNT(kolonne) hopper over rader der den spesifiserte kolonnen er NULL."
   },
   {
     "cat": "sql",
-    "q": "Hva er forskjellen på WHERE og HAVING?",
+    "q": "Hva er forskjellen på WHERE og HAVING i en SELECT-setning?",
     "options": [
-      "WHERE filtrerer etter GROUP BY; HAVING filtrerer før GROUP BY",
-      "WHERE filtrerer enkeltrad-data før gruppering; HAVING filtrerer aggregerte resultater etter GROUP BY",
-      "De er identiske – begge kan brukes om hverandre",
-      "HAVING brukes kun med JOIN; WHERE brukes uten JOIN"
+      "WHERE filtrerer etter GROUP BY er utført; HAVING filtrerer enkeltrad-data",
+      "WHERE filtrerer rader før gruppering; HAVING filtrerer aggregerte resultater etter GROUP BY",
+      "WHERE kan brukes med aggregatfunksjoner; HAVING kan ikke det",
+      "HAVING brukes kun i spørringer med JOIN; WHERE brukes uten JOIN"
     ],
     "correct": 1,
     "explanation": "WHERE filtrerer rader FØR de aggregeres (kan ikke bruke SUM, COUNT etc.). HAVING filtrerer ETTER GROUP BY og kan bruke aggregatfunksjoner."
   },
   {
     "cat": "sql",
-    "q": "Skriv en spørring som finner alle studier uten noen søkere. Hvilken tilnærming er riktig?",
-    "code": "LÆRERSTED_STUDIUM (studid, studienavn, laerid*, ant_plasser)\nSØKER_STUD (sokernr*, prioritet, studid*)",
+    "q": "Finn alle studier som ingen søkere har søkt på. Tabellene er LÆRERSTED_STUDIUM(studid, studienavn) og SØKER_STUD(sokernr*, studid*). Hvilken tilnærming er korrekt?",
+    "code": "LÆRERSTED_STUDIUM (studid, studienavn, ant_plasser)\nSØKER_STUD (sokernr*, prioritet, studid*)",
     "options": [
       "SELECT studienavn FROM LÆRERSTED_STUDIUM WHERE ant_plasser = 0;",
       "SELECT studienavn FROM LÆRERSTED_STUDIUM WHERE studid NOT IN (SELECT studid FROM SØKER_STUD);",
-      "SELECT studienavn FROM LÆRERSTED_STUDIUM ls LEFT JOIN SØKER_STUD ss ON ls.studid = ss.studid WHERE ss.studid > 0;",
-      "SELECT studienavn FROM LÆRERSTED_STUDIUM HAVING COUNT(*) = 0;"
+      "SELECT studienavn FROM LÆRERSTED_STUDIUM WHERE studid IN (SELECT studid FROM SØKER_STUD);",
+      "SELECT studienavn FROM LÆRERSTED_STUDIUM GROUP BY studid HAVING COUNT(*) = 0;"
     ],
     "correct": 1,
-    "explanation": "NOT IN med subquery er klassisk løsning: hent alle studier hvis studid ikke finnes i SØKER_STUD. Alternativt: LEFT JOIN ... WHERE ss.studid IS NULL."
+    "explanation": "NOT IN med subquery henter alle studier hvis studid ikke finnes i SØKER_STUD. Alternativt: LEFT JOIN ... WHERE ss.studid IS NULL. Alternativ 3 gir det motsatte – studier MED søkere."
   },
   {
     "cat": "sql",
-    "q": "Hvilken SQL-setning bruker du for å endre en eksisterende rad?",
+    "q": "Hvilken SQL-setning endrer verdien i en eksisterende rad?",
     "options": [
       "MODIFY tabellnavn SET kolonne = verdi WHERE betingelse;",
       "UPDATE tabellnavn SET kolonne = verdi WHERE betingelse;",
-      "ALTER tabellnavn SET kolonne = verdi WHERE betingelse;",
-      "CHANGE tabellnavn SET kolonne = verdi WHERE betingelse;"
+      "ALTER TABLE tabellnavn SET kolonne = verdi WHERE betingelse;",
+      "INSERT INTO tabellnavn (kolonne) VALUES (verdi) WHERE betingelse;"
     ],
     "correct": 1,
     "explanation": "UPDATE brukes til å endre data i eksisterende rader. HUSK alltid WHERE – uten det oppdateres ALLE rader i tabellen!"
   },
   {
     "cat": "sql",
-    "q": "Fra v25-eksamen: Tell antall begivenheter i \"Ila kirke\" i juni 2025. Tabellen er BEGIVENHET(beid, dato, tidspunkt, betypenavn*, stednavn*, ...). Hvilken spørring er riktig?",
+    "q": "Tell antall begivenheter i 'Ila kirke' i juni 2025. Tabellen er BEGIVENHET(beid, dato, stednavn*, ...). Hvilken spørring er riktig?",
     "options": [
-      "SELECT COUNT(*) FROM BEGIVENHET WHERE stednavn = \"Ila kirke\" AND dato BETWEEN \"2025-06-01\" AND \"2025-06-30\";",
-      "SELECT SUM(beid) FROM BEGIVENHET WHERE stednavn = \"Ila kirke\" AND dato LIKE \"2025-06%\";",
-      "SELECT COUNT(beid) FROM BEGIVENHET WHERE stednavn = \"Ila kirke\" GROUP BY dato;",
-      "SELECT COUNT(*) FROM BEGIVENHET WHERE stednavn = \"Ila kirke\" AND dato = \"2025-06\";"
+      "SELECT COUNT(*) FROM BEGIVENHET WHERE stednavn = 'Ila kirke' AND dato BETWEEN '2025-06-01' AND '2025-06-30';",
+      "SELECT COUNT(*) FROM BEGIVENHET WHERE stednavn = 'Ila kirke' GROUP BY dato;",
+      "SELECT SUM(beid) FROM BEGIVENHET WHERE stednavn = 'Ila kirke' AND dato = '2025-06';",
+      "SELECT COUNT(stednavn) FROM BEGIVENHET WHERE stednavn = 'Ila kirke' AND dato > '2025-06';"
     ],
     "correct": 0,
-    "explanation": "BETWEEN er ren og korrekt for datointervall. LIKE \"2025-06%\" fungerer også i MySQL. Alternativ 4 er feil – dato er ikke et delvis uttrykk. Alternativ 3 gir feil fordi GROUP BY deler opp resultatet."
+    "explanation": "BETWEEN '2025-06-01' AND '2025-06-30' er korrekt for å avgrense til juni. Alternativ 2 gir én rad per dato, ikke totalt. Alternativ 3 er feil – dato er ikke et delvis uttrykk og SUM(beid) gir ikke antall."
   },
   {
     "cat": "sql",
     "q": "Hva gjør DISTINCT i en SELECT-setning?",
     "options": [
-      "Sorterer resultatet alfabetisk",
-      "Fjerner duplikatrader fra resultatet",
-      "Viser kun rader med NULL-verdier",
-      "Henter kun den første raden"
+      "Sorterer resultatet stigende på den første kolonnen i SELECT-listen",
+      "Fjerner rader med NULL-verdier fra resultatet",
+      "Fjerner duplikatrader fra resultatet slik at hver verdi vises én gang",
+      "Begrenser resultatet til de 10 første radene i tabellen"
     ],
-    "correct": 1,
-    "explanation": "SELECT DISTINCT fjerner duplikater fra resultatet – dvs. hvis samme verdi forekommer flere ganger, vises den bare én gang. Tilsvarer GROUP BY uten aggregering."
+    "correct": 2,
+    "explanation": "SELECT DISTINCT fjerner duplikater fra resultatet – hvis samme verdi forekommer flere ganger, vises den bare én gang. Tilsvarer GROUP BY uten aggregering."
   },
   {
     "cat": "sql",
-    "q": "Hva er resultatet av en LEFT JOIN når høyretabellen ikke har noen matchende rad?",
+    "q": "Hva returnerer en LEFT JOIN når høyretabellen ikke har noen matchende rad?",
     "options": [
-      "Den venstre radens kolonner vises med NULL for alle høyretabellens kolonner",
-      "Raden utelates fra resultatet",
-      "En feilmelding returneres",
-      "Høyretabellens kolonner fylles med 0"
+      "Raden utelates fra resultatet, som ved en vanlig INNER JOIN",
+      "Spørringen returnerer en feilmelding om manglende referanse",
+      "Høyretabellens kolonner fylles med standardverdien for den aktuelle datatypen",
+      "Raden beholdes, og høyretabellens kolonner får NULL som verdi"
     ],
-    "correct": 0,
+    "correct": 3,
     "explanation": "LEFT JOIN beholder ALLE rader fra venstre tabell. Hvis ingen match finnes i høyre tabell, settes høyretabellens kolonner til NULL. Dette er nyttig for å finne rader uten tilknytning."
   },
   {
     "cat": "sql",
-    "q": "Du vil finne studier med ledige plasser (søkere < ant_plasser). Hvilken tilnærming er riktig?",
+    "q": "Finn studier med ledige plasser (antall søkere er lavere enn ant_plasser). Hvilken spørring løser dette riktig?",
     "code": "LÆRERSTED_STUDIUM (studid, studienavn, laerid*, ant_plasser)\nSØKER_STUD (sokernr*, prioritet, studid*)",
     "options": [
       "SELECT studienavn FROM LÆRERSTED_STUDIUM WHERE ant_plasser > 0;",
-      "SELECT ls.studienavn FROM LÆRERSTED_STUDIUM ls LEFT JOIN SØKER_STUD ss ON ls.studid = ss.studid GROUP BY ls.studid HAVING COUNT(ss.sokernr) < ls.ant_plasser;",
       "SELECT studienavn FROM LÆRERSTED_STUDIUM WHERE studid NOT IN (SELECT studid FROM SØKER_STUD);",
-      "SELECT studienavn FROM LÆRERSTED_STUDIUM WHERE ant_plasser < COUNT(*);"
+      "SELECT ls.studienavn FROM LÆRERSTED_STUDIUM ls LEFT JOIN SØKER_STUD ss ON ls.studid = ss.studid GROUP BY ls.studid HAVING COUNT(ss.sokernr) < ls.ant_plasser;",
+      "SELECT studienavn FROM LÆRERSTED_STUDIUM ls INNER JOIN SØKER_STUD ss ON ls.studid = ss.studid GROUP BY ls.studid HAVING COUNT(ss.sokernr) < ls.ant_plasser;"
     ],
-    "correct": 1,
-    "explanation": "Du må telle antall søkere per studie (COUNT) og sammenligne med ant_plasser. LEFT JOIN sikrer at studier uten søkere også er med (COUNT gir 0). HAVING brukes fordi vi filtrerer på aggregat."
+    "correct": 2,
+    "explanation": "LEFT JOIN sikrer at studier uten søkere også er med (COUNT gir 0). INNER JOIN (alternativ 4) ville ekskludert studier uten noen søkere. Alternativ 2 finner studier uten søkere i det hele tatt – ikke det samme som ledige plasser."
   },
   {
     "cat": "sql",
-    "q": "Hva er en VIEW (utsnitt) i SQL?",
+    "q": "Hva er en VIEW i SQL?",
     "options": [
-      "En kopi av en tabell lagret på disk",
-      "En lagret SELECT-spørring som kan brukes som om det var en tabell",
-      "En indeks for raskere søk",
-      "En prosedyre som kjøres automatisk ved endring"
+      "En fysisk kopi av en tabell som lagres på disk og oppdateres manuelt",
+      "En lagret SELECT-spørring som oppfører seg som en virtuell tabell",
+      "En indeks som gjør spørringer mot store tabeller raskere",
+      "En midlertidig tabell som slettes når sesjonen avsluttes"
     ],
     "correct": 1,
-    "explanation": "En VIEW er en virtuell tabell definert av en SELECT-spørring. Den lagrer ikke data selv, men lar deg spørre mot den som om det var en vanlig tabell. Nyttig for tilgangskontroll og forenkle komplekse spørringer."
+    "explanation": "En VIEW er en virtuell tabell definert av en SELECT-spørring. Den lagrer ikke data selv, men lar deg spørre mot den som om det var en vanlig tabell. Nyttig for tilgangskontroll og å forenkle komplekse spørringer."
   },
   {
     "cat": "sql",
-    "q": "Hva er syntaksen for å legge til en ny kolonne i en eksisterende tabell?",
+    "q": "Gitt tabellen ORDRE(ordre_id, kunde_id, dato, total). Lag en VIEW kalt STORE_ORDRER som viser ordrer med total over 5000. Hvilken SQL er riktig?",
     "options": [
-      "UPDATE tabellnavn ADD kolonne datatype;",
-      "ALTER TABLE tabellnavn ADD COLUMN kolonne datatype;",
-      "MODIFY TABLE tabellnavn ADD kolonne datatype;",
-      "INSERT COLUMN INTO tabellnavn VALUES (kolonne, datatype);"
+      "MAKE VIEW STORE_ORDRER SELECT * FROM ORDRE WHERE total > 5000;",
+      "CREATE TABLE STORE_ORDRER AS SELECT * FROM ORDRE WHERE total > 5000;",
+      "CREATE VIEW STORE_ORDRER AS SELECT * FROM ORDRE WHERE total > 5000;",
+      "STORE_ORDRER = SELECT ordre_id, kunde_id, dato, total FROM ORDRE WHERE total > 5000;"
+    ],
+    "correct": 2,
+    "explanation": "CREATE VIEW navn AS SELECT ... er riktig syntaks. CREATE TABLE (alternativ 2) ville laget en fysisk kopi av dataene, ikke en virtuell view."
+  },
+  {
+    "cat": "sql",
+    "q": "Finn navn på alle ansatte i avdelingen 'Salg', sortert alfabetisk. Tabellene er ANSATT(ansatt_id, navn, avd_id*) og AVDELING(avd_id, avd_navn). Hvilken spørring er riktig?",
+    "options": [
+      "SELECT navn FROM ANSATT WHERE avd_navn = 'Salg' ORDER BY navn;",
+      "SELECT a.navn FROM ANSATT a INNER JOIN AVDELING av ON a.avd_id = av.avd_id WHERE av.avd_navn = 'Salg' ORDER BY a.navn;",
+      "SELECT navn FROM ANSATT INNER JOIN AVDELING ON avd_navn = 'Salg' ORDER BY navn;",
+      "SELECT navn FROM ANSATT a, AVDELING av WHERE av.avd_navn = 'Salg' ORDER BY a.navn;"
     ],
     "correct": 1,
-    "explanation": "ALTER TABLE brukes til å endre strukturen på en eksisterende tabell. ADD COLUMN legger til en ny kolonne. F.eks.: ALTER TABLE LÆRESTED_STUDIUM ADD COLUMN undervisningsform VARCHAR(30);"
+    "explanation": "avd_navn finnes i AVDELING, navn i ANSATT – du trenger JOIN med ON-betingelse. Alternativ 3 mangler join-betingelsen mellom tabellene. Alternativ 4 mangler koblingen a.avd_id = av.avd_id og gir kartesisk produkt."
+  },
+  {
+    "cat": "sql",
+    "q": "Tabellen PASSERING(pas_id, stasjon_id*, bil_reg, belop). Finn total inntekt per stasjon, men kun for stasjoner med total inntekt over 100 000. Hvilken spørring er riktig?",
+    "options": [
+      "SELECT stasjon_id, SUM(belop) FROM PASSERING WHERE SUM(belop) > 100000 GROUP BY stasjon_id;",
+      "SELECT stasjon_id, SUM(belop) AS total FROM PASSERING GROUP BY stasjon_id WHERE total > 100000;",
+      "SELECT stasjon_id, SUM(belop) AS total FROM PASSERING GROUP BY stasjon_id HAVING SUM(belop) > 100000;",
+      "SELECT stasjon_id, SUM(belop) AS total FROM PASSERING HAVING SUM(belop) > 100000;"
+    ],
+    "correct": 2,
+    "explanation": "SUM aggregerer beløp per stasjon (GROUP BY). HAVING filtrerer på aggregerte verdier – du kan ikke bruke WHERE på SUM(). Alternativ 2 er feil fordi WHERE ikke kan komme etter GROUP BY. Alternativ 4 mangler GROUP BY."
   },
   {
     "cat": "norm",
     "q": "Hva krever 1. normalform (1NF)?",
     "options": [
       "Alle ikke-nøkkelattributter er fullt funksjonelt avhengige av hele primærnøkkelen",
-      "Ingen transitive avhengigheter",
-      "Alle attributter er atomiske (udelte verdier) og det finnes ingen repeterende grupper",
-      "Ingen kandidatnøkler utenom primærnøkkelen"
+      "Det finnes ingen transitive avhengigheter mellom ikke-nøkkelattributter",
+      "Alle attributter inneholder atomiske verdier og det finnes ingen repeterende grupper",
+      "Tabellen har én og kun én kandidatnøkkel som primærnøkkel"
     ],
     "correct": 2,
     "explanation": "1NF: En tabell er i 1NF hvis alle kolonner inneholder atomiske (enkle, udelte) verdier og det ikke finnes repeterende grupper eller lister i en celle."
@@ -246,96 +294,132 @@
     "cat": "norm",
     "q": "Hva er en transitiv avhengighet?",
     "options": [
-      "En avhengighet der A → B og A er primærnøkkel",
-      "En avhengighet der A → B → C, der A er PK, B er ikke-nøkkel og C avhenger av B",
-      "En avhengighet mellom to fremmednøkler",
-      "En avhengighet mellom en tabell og en view"
+      "En avhengighet der primærnøkkelen A bestemmer attributt B direkte",
+      "En avhengighet der A → B og B → C, der A er PK og B er et ikke-nøkkelattributt",
+      "En avhengighet mellom to fremmednøkler i samme tabell",
+      "En avhengighet der to attributter gjensidig bestemmer hverandre"
     ],
     "correct": 1,
     "explanation": "Transitiv avhengighet: A → B og B → C (der A er PK, B er ikke-nøkkel). 3NF krever at du fjerner slike avhengigheter ved å splitte tabellen. Eksempel: Ordre → KundeID → KundeAdresse."
   },
   {
     "cat": "norm",
-    "q": "Fra v25-eksamen: Er tabellen STED(stednavn, adresse, postnr, beskrivelse) i 3NF? Anta at stednavn er PK.",
+    "q": "Tabellen STED(stednavn, adresse, postnr, beskrivelse) – er den i 3NF? Anta stednavn er PK.",
     "options": [
-      "Nei, fordi postnr → adresse er en transitiv avhengighet",
-      "Ja, fordi alle attributter er direkte avhengige av stednavn (PK)",
-      "Nei, fordi beskrivelse ikke er atomisk",
-      "Ja, fordi tabellen er i 1NF"
+      "Nei – postnr → adresse er en transitiv avhengighet som bryter 3NF",
+      "Ja – adresse, postnr og beskrivelse er alle direkte attributter for stedet",
+      "Nei – beskrivelse er ikke atomisk og bryter 1NF",
+      "Ja – tabellen er i 3NF fordi alle attributter er tekstfelter"
     ],
     "correct": 1,
-    "explanation": "Med stednavn som PK: adresse, postnr og beskrivelse er alle direkte attributter til stedet. Ingen transitiv avhengighet her (postnr er stedsdata, ikke en selvstendig enhet). Tabellen antas å være i 3NF. (Man kan diskutere om postnr → poststed, men poststed er ikke i tabellen.)"
+    "explanation": "Med stednavn som PK: adresse, postnr og beskrivelse er alle direkte attributter til stedet. Ingen transitiv avhengighet (postnr er stedsdata, ikke en selvstendig enhet). Tabellen er i 3NF. (Man kan diskutere om postnr → poststed, men poststed er ikke i tabellen.)"
   },
   {
     "cat": "norm",
     "q": "Hva er ACID i databaseteori?",
     "options": [
-      "Atomicity, Consistency, Isolation, Durability – egenskaper for transaksjoner",
-      "Aggregation, Concatenation, Indexing, Deletion – operasjoner i SQL",
-      "Authentication, Caching, Integrity, Deletion – sikkerhetsprinsipper",
-      "Auto-increment, Cascade, Index, Default – kolonneegenskaper"
+      "Atomicity, Consistency, Isolation, Durability – fire egenskaper for transaksjoner",
+      "Aggregation, Concatenation, Indexing, Deletion – fire grunnoperasjoner i SQL",
+      "Authentication, Caching, Integrity, Deletion – fire sikkerhetsprinsipper for databaser",
+      "Auto-increment, Cascade, Index, Default – fire kolonneegenskaper i SQL"
     ],
     "correct": 0,
     "explanation": "ACID: Atomicity (alt eller ingenting), Consistency (databasen går fra én gyldig tilstand til en annen), Isolation (samtidige transaksjoner ikke forstyrrer hverandre), Durability (commit overlever krasj)."
   },
   {
     "cat": "norm",
+    "q": "Transaksjon T1 leser rad X. T2 endrer og committer rad X. T1 leser rad X igjen og får en annen verdi. Hva kalles dette?",
+    "options": [
+      "Dirty read – T1 leser data T2 har endret men ikke committert ennå",
+      "Non-repeatable read – T1 får ulikt resultat ved gjentatt lesing av samme rad",
+      "Phantom read – T1 ser nye rader som T2 har satt inn i tabellen",
+      "Deadlock – T1 og T2 venter på hverandres låser og blokkerer hverandre"
+    ],
+    "correct": 1,
+    "explanation": "Non-repeatable read: samme rad leses to ganger i én transaksjon og gir ulikt resultat fordi en annen transaksjon har endret og committed den mellom de to lesningene. Dirty read ville vært hvis T2 IKKE hadde committed ennå."
+  },
+  {
+    "cat": "norm",
     "q": "Hva er et \"dirty read\" problem i flerbrukerdatabaser?",
     "options": [
-      "En transaksjon leser data som er endret av en annen transaksjon som ennå ikke er committed",
-      "En transaksjon sletter data fra feil tabell",
-      "En bruker leser data uten tilgangstillatelse",
-      "En spørring returnerer NULL-verdier"
+      "En transaksjon leser data endret av en annen transaksjon som ennå ikke er committed",
+      "En transaksjon oppdaterer rader som tilhører en annen brukers sesjon",
+      "En transaksjon leser data den ikke har tilgangstillatelse til i systemet",
+      "En transaksjon returnerer NULL fordi en annen transaksjon har slettet raden"
     ],
     "correct": 0,
     "explanation": "Dirty read: Transaksjon A leser data endret av B, men B gjør så ROLLBACK. A har da lest \"skitne\" (ugyldige) data. Løses med korrekt isolasjonsnivå (f.eks. READ COMMITTED)."
   },
   {
     "cat": "norm",
-    "q": "Hva er forskjellen på NoSQL og SQL-databaser?",
+    "q": "Hva er forskjellen på SQL-databaser og NoSQL-databaser?",
     "options": [
-      "NoSQL-databaser bruker kun JSON og har ingen spørrespråk",
-      "SQL-databaser har fast skjema og relasjonsmodell; NoSQL er mer fleksibelt (dokument, key-value, graf, kolonne) og skalerer horisontalt",
-      "NoSQL er nyere og erstatter fullstendig SQL-databaser",
-      "SQL-databaser er raskere enn NoSQL i alle brukstilfeller"
+      "SQL-databaser brukes kun til lesing; NoSQL-databaser brukes til skriving",
+      "SQL-databaser har fast skjema og relasjonsmodell; NoSQL er fleksibelt og skalerer horisontalt",
+      "NoSQL-databaser støtter kun JSON-format og har ingen spørrespråk",
+      "SQL-databaser er alltid raskere fordi de bruker indekser; NoSQL gjør ikke det"
     ],
     "correct": 1,
     "explanation": "NoSQL-databaser (MongoDB, Redis, Neo4j, Cassandra) tilbyr fleksibelt skjema og horisontal skalering. SQL-databaser passer best for strukturerte, konsistente data med komplekse relasjoner."
   },
   {
     "cat": "norm",
-    "q": "Hva er en fordel med å lagre data som JSON i et databaseattributt?",
+    "q": "Du skal lagre resultater fra en spørreundersøkelse der hvert svar kan ha svært ulikt sett av felt. Hva er det beste lagringsvalget?",
     "options": [
-      "JSON gir alltid raskere spørringer enn normaliserte tabeller",
-      "JSON er egnet for semi-strukturert data med variabelt sett av attributter, f.eks. intervjunotater",
-      "JSON er den eneste måten å lagre tekst i moderne databaser",
-      "JSON eliminerer behovet for primærnøkler"
+      "Én kolonne per mulig felt, med NULL der feltet ikke er relevant for svaret",
+      "En JSON-kolonne som lagrer hele svarstrukturen som ett JSON-objekt per rad",
+      "En ny tabell per respondent slik at strukturen kan tilpasses individuelt",
+      "Lagre alle felt som én lang tekststreng separert med semikolon i én kolonne"
     ],
     "correct": 1,
-    "explanation": "JSON egner seg når strukturen varierer mellom rader (f.eks. notater med ulike felt per intervju). Ulemper: vanskeligere å søke i, ingen RI-støtte for innhold, vanskeligere å normalisere."
+    "explanation": "JSON egner seg godt når attributtsettet varierer mellom rader (semi-strukturert data). En NULL-tung tabell (alternativ 1) er tungvint å vedlikeholde. Alternativ 3 gir eksplosjon i antall tabeller. Alternativ 4 bryter 1NF."
+  },
+  {
+    "cat": "norm",
+    "q": "En transaksjon overfører 500 kr fra konto A til konto B. Systemet krasjer etter at A er trukket men før B er kreditert. Hvilken ACID-egenskap sikrer at A rulles tilbake?",
+    "options": [
+      "Consistency – databasen skal alltid gå fra én gyldig tilstand til en annen",
+      "Isolation – transaksjoner skal ikke forstyrre hverandre under kjøring",
+      "Atomicity – hele transaksjonen utføres eller ingen del av den utføres",
+      "Durability – committede endringer skal overleve systemkrasj"
+    ],
+    "correct": 2,
+    "explanation": "Atomicity betyr \"alt eller ingenting\". Hvis transaksjonen ikke fullføres, rulles alle deloperasjoner tilbake (ROLLBACK). Her vil A ikke trekkes og B ikke krediteres – kontosaldoen forblir uendret."
+  },
+  {
+    "cat": "norm",
+    "q": "Tabellen KURS(kurs_id, kurs_navn, foreleser_id, foreleser_navn, rom_nr, rom_kapasitet) – er den i 3NF? Anta kurs_id er PK.",
+    "options": [
+      "Ja – alle attributter er direkte knyttet til kurset og dets PK",
+      "Nei – foreleser_id → foreleser_navn og rom_nr → rom_kapasitet er transitive avhengigheter",
+      "Nei – tabellen bryter 1NF fordi kurs_navn ikke er atomisk",
+      "Ja – 3NF gjelder kun tabeller med sammensatte primærnøkler"
+    ],
+    "correct": 1,
+    "explanation": "kurs_id → foreleser_id → foreleser_navn og kurs_id → rom_nr → rom_kapasitet er transitive avhengigheter som bryter 3NF. Løsning: splitt ut FORELESER(foreleser_id, foreleser_navn) og ROM(rom_nr, rom_kapasitet)."
   },
   {
     "cat": "norm",
     "q": "Hva er en deadlock i databasesammenheng?",
     "options": [
-      "En tabell som er fullstendig uten data",
-      "En situasjon der to transaksjoner venter på hverandres låser – ingen kan fortsette",
-      "En spørring som tar for lang tid å utføre",
-      "En transaksjon som gjør ROLLBACK automatisk"
+      "En spørring som tar for lang tid og automatisk avbrytes av systemet",
+      "En transaksjon som gjør ROLLBACK fordi en constraint er brutt",
+      "En situasjon der to transaksjoner venter på hverandres låser og ingen kan fortsette",
+      "En tabell som er låst for alle brukere fordi en administrator kjører vedlikehold"
     ],
-    "correct": 1,
+    "correct": 2,
     "explanation": "Deadlock: T1 holder lås på A og venter på B. T2 holder lås på B og venter på A. Systemet oppdager dette og velger én som \"offer\" (rollback). Løses med timeout, låsordning eller optimistisk låsing."
   },
   {
     "cat": "norm",
     "q": "Hva betyr 2. normalform (2NF)?",
     "options": [
-      "Tabellen er i 1NF og alle ikke-nøkkelattributter er fullt funksjonelt avhengige av HELE primærnøkkelen (ikke bare en del av den)",
-      "Tabellen er i 1NF og har ingen NULL-verdier",
-      "Tabellen har ingen transitive avhengigheter",
-      "Tabellen har nøyaktig én primærnøkkel"
+      "Tabellen er i 1NF og har ingen transitive avhengigheter mellom ikke-nøkkelattributter",
+      "Tabellen er i 1NF og alle ikke-nøkkelattributter er fullt avhengige av hele primærnøkkelen",
+      "Tabellen er i 1NF og inneholder ingen NULL-verdier i noen kolonne",
+      "Tabellen er i 1NF og har nøyaktig én kandidatnøkkel som primærnøkkel"
     ],
-    "correct": 0,
+    "correct": 1,
     "explanation": "2NF er relevant kun ved sammensatte primærnøkler. Hvis et ikke-nøkkelattributt er avhengig av bare EN DEL av PK, er du i brudd med 2NF. Splitt da tabellen slik at hvert attributt er fullt avhengig av sin PK."
   }
 ]

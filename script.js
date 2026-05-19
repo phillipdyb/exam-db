@@ -6,9 +6,11 @@ let answered = false;
 let wrongQuestions = [];
 let catScores = {};
 
+// shuffledOptions[i] = { options: [...], correctIndex: N } for the current quiz
+let shuffledOptions = [];
+
 const catNames = { er: 'ER & Relmod', sql: 'SQL', norm: 'Normalisering', all: 'Alt blandet' };
 
-// Load questions from qs.json on page load
 fetch('qs.json')
   .then(r => r.json())
   .then(data => { ALL_QUESTIONS = data; })
@@ -21,6 +23,16 @@ function shuffle(arr) {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
+}
+
+// Shuffle options for one question, returning { options, correctIndex }
+function shuffleOptions(q) {
+  const correctText = q.options[q.correct];
+  const shuffled = shuffle([...q.options]);
+  return {
+    options: shuffled,
+    correctIndex: shuffled.indexOf(correctText)
+  };
 }
 
 function startCategory(cat) {
@@ -39,6 +51,8 @@ function retryWrong() {
 
 function startQuiz(qs) {
   currentQuestions = qs;
+  // Pre-shuffle all options so they stay stable if the user re-reads a question
+  shuffledOptions = qs.map(q => shuffleOptions(q));
   currentIndex = 0;
   score = 0;
   wrongQuestions = [];
@@ -52,6 +66,7 @@ function startQuiz(qs) {
 function showQuestion() {
   answered = false;
   const q = currentQuestions[currentIndex];
+  const { options } = shuffledOptions[currentIndex];
 
   document.getElementById('progress-info').textContent =
     `Spørsmål ${currentIndex + 1} av ${currentQuestions.length}`;
@@ -65,7 +80,7 @@ function showQuestion() {
 
   const optList = document.getElementById('options-list');
   optList.innerHTML = '';
-  q.options.forEach((opt, i) => {
+  options.forEach((opt, i) => {
     const li = document.createElement('li');
     const btn = document.createElement('button');
     btn.className = 'option-btn';
@@ -86,16 +101,17 @@ function selectOption(i) {
   if (answered) return;
   answered = true;
   const q = currentQuestions[currentIndex];
+  const { correctIndex } = shuffledOptions[currentIndex];
   const btns = document.querySelectorAll('.option-btn');
 
   btns.forEach((b, idx) => {
     b.disabled = true;
-    if (idx === q.correct) b.classList.add('correct');
+    if (idx === correctIndex) b.classList.add('correct');
     else if (idx === i) b.classList.add('wrong');
   });
 
   const fb = document.getElementById('feedback-box');
-  if (i === q.correct) {
+  if (i === correctIndex) {
     score++;
     catScores[q.cat].c++;
     fb.className = 'feedback-box correct';
