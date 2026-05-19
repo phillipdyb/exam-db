@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teori – IDATT2002</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/jpeg" href="favicon.jpg">
+</head>
+<body>
+<header>
+  <h1>📚 Teori</h1>
+  <p>IDATT2002 – NTNU Eksamensforberedelse</p>
+  <nav>
+    <a href="index.html">🏠 Hjem</a>
+    <a href="teori.html" class="active">📚 Teori</a>
+    <a href="er.html">🗺️ ER & Relmod</a>
+    <a href="sql.html">🔍 SQL</a>
+    <a href="norm.html">📐 Normalisering & Teori</a>
+  </nav>
+</header>
+
+<div class="container">
+  <div class="theory-content">
+
+    <div class="callout">
+      <strong>Eksamen 22. mai – kode E (ingen hjelpemidler).</strong> Alt besvares i Inspera. Ingen tegning – du skal kunne lese ER-diagram i UML-notasjon. Inntil 40–60% flervalg knyttet til case. Ingen rene teorispørsmål som «forklar 3NF».
+    </div>
+
+    <div class="theory-grid">
+      <a href="er.html" class="theory-card">
+        <div class="tc-icon">🗺️</div>
+        <h3>ER & Relasjonsmodell</h3>
+        <p>Entiteter, attributter, relasjoner, multiplisitet, oversettelse til relmod, EER og spesialisering</p>
+      </a>
+      <a href="sql.html" class="theory-card">
+        <div class="tc-icon">🔍</div>
+        <h3>SQL</h3>
+        <p>SELECT, WHERE, JOIN, GROUP BY, HAVING, subqueries, aggregatfunksjoner, CREATE VIEW</p>
+      </a>
+      <a href="norm.html" class="theory-card">
+        <div class="tc-icon">📐</div>
+        <h3>Normalisering & Teori</h3>
+        <p>1NF, 2NF, 3NF, ACID, transaksjoner, dirty read, deadlock, NoSQL, JSON</p>
+      </a>
+    </div>
+
+    <div class="section">
+      <h2>// Eksamenens struktur – hva du kan forvente</h2>
+      <p>Basert på v24 og v25 følger eksamen samme mønster hvert år:</p>
+      <h3>Oppgave 1 – Datamodellering (ca. 40%)</h3>
+      <ul>
+        <li>Du får et ER-diagram (UML-notasjon) beskrevet eller oppgitt</li>
+        <li>Skal oversette til relasjonell form med PK og FK</li>
+        <li>Ofte én SQL-spørring basert på tabellene du nettopp laget</li>
+        <li>Kan inneholde EER-spesialisering</li>
+      </ul>
+      <h3>Oppgave 2 – SQL (ca. 40%)</h3>
+      <ul>
+        <li>Du får ferdige tabeller (relmod-notasjon)</li>
+        <li>5–8 SQL-spørringer av stigende vanskelighetsgrad</li>
+        <li>JOIN, GROUP BY/HAVING, subqueries, CREATE VIEW</li>
+      </ul>
+      <h3>Oppgave 3 – Teori (ca. 20%)</h3>
+      <ul>
+        <li>Normalisering – gjerne «er denne tabellen i 3NF?» med begrunnelse</li>
+        <li>Transaksjoner og ACID – case-basert, ikke «forklar ACID»</li>
+        <li>JSON/NoSQL – fordeler/ulemper i kontekst</li>
+      </ul>
+      <div class="callout warn">
+        <strong>Viktig v26:</strong> Ingen rene teorispørsmål. Teorien kommer som del av case-oppgaver. Du skal bruke kunnskapen, ikke gjengi definisjoner.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>// Nyttige lenker fra pensum</h2>
+      <ul>
+        <li><a href="https://www.guru99.com/nosql-tutorial.html" style="color:var(--accent)">NoSQL Tutorial – Guru99</a></li>
+        <li><a href="https://www.digitalocean.com/community/tutorials/a-comparison-of-nosql-database-management-systems-and-models" style="color:var(--accent)">Sammenligning av NoSQL-modeller – DigitalOcean</a></li>
+        <li><a href="https://www.digitalocean.com/community/tutorials/working-with-json-in-mysql" style="color:var(--accent)">JSON i MySQL – DigitalOcean</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
