@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oppsummering – IDATT2002</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="icon" type="image/x-icon" href="../favicon.ico">
+  <style>
+    .theory-content { max-width: 780px; margin: 0 auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.83rem;
+      margin: 0.8rem 0;
+    }
+
+    th {
+      background: var(--surface2);
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      padding: 0.6rem 0.9rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 0.55rem 0.9rem;
+      color: var(--text2);
+      border-bottom: 1px solid rgba(48,54,61,0.5);
+      vertical-align: top;
+      line-height: 1.6;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(88,166,255,0.03); }
+
+    td strong { color: var(--text); }
+
+    .ok   { color: var(--accent2) !important; }
+    .warn { color: var(--warn) !important; }
+    .bad  { color: var(--danger) !important; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>📋 Oppsummering</h1>
+  <p>IDATT2002 – Normalisering, ACID, Transaksjoner, NoSQL, JSON</p>
+  <nav>
+    <a href="/">🏠 Hjem</a>
+    <a href="/teori">📚 Teori</a>
+    <a href="/er">🗺️ ER &amp; Relmod</a>
+    <a href="/sql">🔍 SQL</a>
+    <a href="/norm">📐 Normalisering &amp; Teori</a>
+    <a href="/mock-exam">📝 Mock-eksamen</a>
+    <a href="/sql-oving">🛢️ SQL-øving</a>
+    <a href="/oppsummering" class="active">📋 Oppsummering</a>
+  </nav>
+</header>
+
+<div class="container">
+<div class="theory-content">
+
+  <div class="callout">
+    <strong>På eksamen v26:</strong> Ingen rene teorispørsmål. Teorien kommer som del av case-oppgaver. Du skal bruke kunnskapen, ikke gjengi definisjoner. Ingen MongoDB-kode, ingen CREATE TABLE.
+  </div>
+
+  <!-- ===== NORMALFORMER ===== -->
+  <div class="section">
+    <h2>// Normalformer</h2>
+
+    <p>Tre regler du sjekker i rekkefølge. Hver form bygger på den forrige.</p>
+
+    <div class="callout">
+      <strong>Huskeregel:</strong> Hvert attributt skal avhenge av PK, hele PK, og kun PK.
+    </div>
+
+    <h3>Hva betyr atomisk?</h3>
+    <p>Atomisk betyr "ikke delbar" – én verdi per celle, ikke en liste eller flere ting pakket sammen.</p>
+    <div class="code-block">-- IKKE atomisk:
+telefoner = "91234567, 98765432"   ← liste i én celle
+adresse   = "Kongens gate 5, Oslo" ← flere ting i én celle
+
+-- Atomisk:
+telefon = "91234567"               ← én verdi per rad</div>
+
+    <h3>1NF – ingen lister i celler</h3>
+    <p>Alle verdier er atomiske. Ingen repeterende grupper.</p>
+    <div class="code-block">-- BRYTER 1NF:
+STUDENT(student_id, navn, telefoner)  -- telefoner = "91234567, 98765432"
+
+-- I 1NF:
+STUDENT(student_id, navn)
+STUDENT_TELEFON(student_id*, telefon)</div>
+
+    <h3>Hva er sammensatt PK?</h3>
+    <p>En PK som består av to eller flere kolonner i kombinasjon. Verken kolonne A eller B er unik alene – men kombinasjonen er det.</p>
+    <div class="code-block">-- Sammensatt PK: (student_id, kurs_id) sammen er unike
+PÅMELDING(student_id*, kurs_id*, dato)
+-- En student kan melde seg på mange kurs
+-- Et kurs kan ha mange studenter
+-- Men en student kan bare melde seg på samme kurs én gang</div>
+
+    <h3>2NF – ingen delvise avhengigheter</h3>
+    <p>Kun relevant når PK er sammensatt. Alle attributter må avhenge av hele PK, ikke bare en del.</p>
+    <div class="code-block">-- BRYTER 2NF: kurs_navn avhenger kun av kurs_id, ikke av begge
+PÅMELDING(student_id*, kurs_id*, kurs_navn, dato)
+
+-- I 2NF:
+KURS(kurs_id, kurs_navn)
+PÅMELDING(student_id*, kurs_id*, dato)</div>
+
+    <h3>Hva er transitiv avhengighet?</h3>
+    <p>A → B → C, der A er PK og B er ikke-nøkkel. C avhenger av A, men bare gjennom B – ikke direkte.</p>
+    <div class="code-block">ANSATT(ansatt_id, navn, avd_id, avd_navn)
+-- ansatt_id → avd_id → avd_navn  ← transitiv
+-- avd_navn avhenger av avd_id, ikke direkte av PK
+
+-- Problemet: endre avdelingsnavnet → må oppdatere alle ansatt-rader</div>
+
+    <h3>3NF – ingen transitive avhengigheter</h3>
+    <p>Ingen ikke-nøkkel-attributt skal avhenge av et annet ikke-nøkkel-attributt.</p>
+    <div class="code-block">-- BRYTER 3NF:
+ANSATT(ansatt_id, navn, avd_id, avd_navn)
+
+-- I 3NF:
+AVDELING(avd_id, avd_navn)
+ANSATT(ansatt_id, navn, avd_id*)</div>
+
+    <h3>Slik vurderer du en tabell på eksamen</h3>
+    <p>Still deg disse spørsmålene i rekkefølge:</p>
+    <ul>
+      <li>Er alle verdier atomiske? → 1NF</li>
+      <li>Er PK sammensatt? Hvis ja – avhenger alle attributter av hele PK? → 2NF</li>
+      <li>Avhenger noe attributt av et annet ikke-nøkkel-attributt? → 3NF</li>
+    </ul>
+  </div>
+
+  <!-- ===== ACID ===== -->
+  <div class="section">
+    <h2>// ACID</h2>
+
+    <p>Fire egenskaper som garanterer pålitelige transaksjoner. Gjelder alle relasjonsdatabaser (MySQL, PostgreSQL, MariaDB). Du trenger ikke gjøre noe spesielt – databasen håndterer det i bakgrunnen.</p>
+
+    <table>
+      <tr><th>Bokstav</th><th>Navn</th><th>Betyr</th></tr>
+      <tr><td><strong>A</strong></td><td>Atomicity</td><td>Alt eller ingenting. Krasjer det midt i → alt rulles tilbake (ROLLBACK)</td></tr>
+      <tr><td><strong>C</strong></td><td>Consistency</td><td>Databasen går alltid fra én gyldig tilstand til en annen. Alle regler overholdes</td></tr>
+      <tr><td><strong>I</strong></td><td>Isolation</td><td>Samtidige transaksjoner forstyrrer ikke hverandre. Styres med isolasjonsnivå</td></tr>
+      <tr><td><strong>D</strong></td><td>Durability</td><td>Committed data overlever krasj og strømbrudd – skrevet til disk</td></tr>
+    </table>
+
+    <div class="code-block">-- Slik bruker du transaksjoner eksplisitt:
+BEGIN TRANSACTION;
+  UPDATE KONTO SET saldo = saldo - 500 WHERE konto_id = 'A';
+  UPDATE KONTO SET saldo = saldo + 500 WHERE konto_id = 'B';
+COMMIT;    -- alt gikk bra
+-- eller:
+ROLLBACK;  -- noe gikk galt, angre alt</div>
+
+    <div class="callout warn">
+      <strong>NoSQL og ACID:</strong> NoSQL-databaser har svakere eller ingen ACID-garantier som standard. De prioriterer hastighet og skalering over sterk konsistens.
+    </div>
+  </div>
+
+  <!-- ===== TRANSAKSJONS-PROBLEMER ===== -->
+  <div class="section">
+    <h2>// Transaksjons-problemer</h2>
+
+    <p>Oppstår kun ved <strong>samtidig bruk</strong> av databasen – mange brukere/prosesser på samme tid. Isolation i ACID er det som beskytter mot dem, styrt av isolasjonsnivå.</p>
+
+    <h3>De fem problemene</h3>
+    <table>
+      <tr><th>Problem</th><th>Hva skjer</th><th>Nøkkelord</th></tr>
+      <tr>
+        <td><strong>Dirty read</strong></td>
+        <td>T1 leser data T2 har endret men ikke committert. T2 gjør ROLLBACK – T1 har lest data som aldri eksisterte</td>
+        <td>Leste ucommittet data</td>
+      </tr>
+      <tr>
+        <td><strong>Non-repeatable read</strong></td>
+        <td>T1 leser en rad. T2 endrer og committer. T1 leser samme rad igjen og får en annen verdi</td>
+        <td>Samme rad, ulik verdi</td>
+      </tr>
+      <tr>
+        <td><strong>Phantom read</strong></td>
+        <td>T1 kjører en spørring og får N rader. T2 setter inn nye rader. T1 kjører samme spørring og får N+M rader</td>
+        <td>Samme spørring, flere rader</td>
+      </tr>
+      <tr>
+        <td><strong>Lost update</strong></td>
+        <td>T1 og T2 leser begge samme verdi. Begge skriver basert på den. T2s commit overskriver T1s endring</td>
+        <td>Begge leste samme, én forsvant</td>
+      </tr>
+      <tr>
+        <td><strong>Deadlock</strong></td>
+        <td>T1 venter på T2s lås. T2 venter på T1s lås. Ingen kan fortsette. Databasen velger én som offer og ruller den tilbake</td>
+        <td>Begge venter på hverandre</td>
+      </tr>
+    </table>
+
+    <h3>Hva beskytter mot hva?</h3>
+    <table>
+      <tr><th>Problem</th><th>Løses med</th></tr>
+      <tr><td>Dirty read</td><td class="ok">✅ Isolasjonsnivå (READ COMMITTED eller høyere)</td></tr>
+      <tr><td>Non-repeatable read</td><td class="ok">✅ Isolasjonsnivå (REPEATABLE READ eller høyere)</td></tr>
+      <tr><td>Phantom read</td><td class="ok">✅ Isolasjonsnivå (SERIALIZABLE)</td></tr>
+      <tr><td>Lost update</td><td class="warn">⚠️ Delvis isolasjonsnivå – best løst med eksplisitt låsing (SELECT ... FOR UPDATE)</td></tr>
+      <tr><td>Deadlock</td><td class="bad">❌ Ikke isolasjonsnivå – databasen oppdager og ruller én transaksjon tilbake automatisk</td></tr>
+    </table>
+
+    <div class="callout">
+      <strong>På eksamen:</strong> Du trenger ikke pugge isolasjonsnivåene med navn. Det viktige er å kjenne igjen de fem problemene og vite hva som skiller dem.
+    </div>
+  </div>
+
+  <!-- ===== NoSQL ===== -->
+  <div class="section">
+    <h2>// NoSQL</h2>
+
+    <p>NoSQL = "Not only SQL". Databaser som ikke bruker relasjonsmodellen. Fire hovedtyper:</p>
+
+    <table>
+      <tr><th>Type</th><th>Eksempel</th><th>Brukes til</th></tr>
+      <tr><td><strong>Dokumentdatabase</strong></td><td>MongoDB</td><td>Fleksible JSON-dokumenter der struktur varierer mellom rader</td></tr>
+      <tr><td><strong>Nøkkel-verdi</strong></td><td>Redis</td><td>Lynrask oppslag på nøkkel – caching, sesjoner</td></tr>
+      <tr><td><strong>Graf</strong></td><td>Neo4j</td><td>Relasjoner mellom noder – sosiale nettverk, anbefalinger</td></tr>
+      <tr><td><strong>Kolonnebasert</strong></td><td>Cassandra</td><td>Enorme datamengder – logg, sensordata</td></tr>
+    </table>
+
+    <h3>SQL vs NoSQL</h3>
+    <table>
+      <tr><th></th><th>SQL</th><th>NoSQL</th></tr>
+      <tr><td>Skjema</td><td>Fast, definert på forhånd</td><td>Fleksibelt, varierer per rad</td></tr>
+      <tr><td>Skalering</td><td>Vertikalt (kraftigere server)</td><td>Horisontalt (flere servere)</td></tr>
+      <tr><td>Konsistens</td><td>Sterk (ACID)</td><td>Ofte svakere</td></tr>
+      <tr><td>Passer til</td><td>Bank, HR, ordre – strukturert data</td><td>Logg, sosiale medier, sensorer</td></tr>
+    </table>
+
+    <div class="callout warn">
+      <strong>På eksamen:</strong> Ingen MongoDB-kode. Du skal vite hva NoSQL er, hvilke fire typer som finnes, og kunne argumentere for/mot i en gitt situasjon.
+    </div>
+  </div>
+
+  <!-- ===== JSON ===== -->
+  <div class="section">
+    <h2>// JSON i databaser</h2>
+
+    <p>Lagre semi-strukturert data direkte i én kolonne. Nyttig når strukturen varierer mellom rader.</p>
+
+    <div class="code-block">-- En rad kan ha én struktur:
+{ "inntrykk": "Positiv", "teknisk_score": 4, "språk": ["Python", "SQL"] }
+
+-- En annen rad kan ha helt andre felt:
+{ "inntrykk": "Nøytral", "kommentar": "Trenger mer erfaring" }</div>
+
+    <table>
+      <tr><th>Fordeler</th><th>Ulemper</th></tr>
+      <tr>
+        <td>Fleksibel struktur per rad</td>
+        <td>Vanskelig å søke på enkeltfelt</td>
+      </tr>
+      <tr>
+        <td>Slipper å endre tabellskjema</td>
+        <td>Ingen referanseintegritet for innholdet</td>
+      </tr>
+      <tr>
+        <td>Bra når data leses samlet</td>
+        <td>Bryter med normalisering</td>
+      </tr>
+    </table>
+
+    <div class="callout">
+      <strong>Tommelfingerregel:</strong> Varierende struktur + sjelden filtrering på enkeltfelt → JSON. Fast struktur + hyppige spørringer → normaliser.
+    </div>
+
+    <div class="callout warn">
+      <strong>På eksamen v26:</strong> Du skal ikke skrive JSON-kode. Du skal kunne argumentere for/mot JSON i en gitt kontekst.
+    </div>
+  </div>
+
+  <div style="text-align:center; padding: 1rem 0 2rem; display:flex; gap:0.75rem; justify-content:center; flex-wrap:wrap;">
+    <a href="/norm" class="btn btn-secondary">📐 Les mer om normalisering</a>
+    <a href="/mock-exam" class="btn btn-primary">📝 Ta mock-eksamen</a>
+  </div>
+
+</div>
+</div>
+</body>
+</html>
