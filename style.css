@@ -65,6 +65,9 @@ header p {
 
 .badge.warn { border-color: var(--warn); color: var(--warn); }
 
+.exam-info.compact { gap: 0.5rem; margin-top: 0.6rem; }
+.exam-info.compact .badge { font-size: 0.68rem; padding: 0.18rem 0.65rem; }
+
 .container { max-width: 780px; margin: 0 auto; }
 
 /* START SCREEN */
@@ -388,13 +391,14 @@ header p {
 
 .tip-box strong { color: var(--accent); }
 
-/* ===== THEORY PAGES ===== */
+/* ===== NAVIGATION ===== */
 nav {
   display: flex;
   gap: 0.5rem;
   justify-content: center;
   flex-wrap: wrap;
   padding: 1rem 0 0;
+  align-items: center;
 }
 
 nav a {
@@ -411,6 +415,77 @@ nav a {
 
 nav a:hover, nav a.active {
   border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Hjem – brighter border and white text to stand out */
+nav a.nav-home {
+  color: var(--text);
+  border-color: var(--text2);
+}
+nav a.nav-home:hover,
+nav a.nav-home.active {
+  border-color: var(--text);
+  color: var(--text);
+  background: var(--surface);
+}
+
+/* Vertical separator between nav groups */
+.nav-sep {
+  display: block;
+  width: 1px;
+  height: 1rem;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+/* Teori group container */
+.nav-group {
+  display: flex;
+  gap: 0.1rem;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 0.15rem 0.3rem;
+  transition: border-color 0.2s;
+}
+.nav-group:has(.active) {
+  border-color: rgba(88, 166, 255, 0.45);
+}
+
+/* All links inside the group – transparent, compact */
+.nav-group a {
+  background: transparent;
+  border-color: transparent;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.73rem;
+}
+.nav-group a:hover,
+.nav-group a.active {
+  background: transparent;
+  border-color: transparent;
+  color: var(--accent);
+}
+
+/* "Teori" parent label link */
+.nav-group a.nav-group-parent {
+  font-size: 0.78rem;
+  color: var(--text);
+  padding: 0.25rem 0.8rem;
+  position: relative;
+  margin-right: 0.2rem;
+}
+.nav-group a.nav-group-parent::after {
+  content: '';
+  position: absolute;
+  right: -0.1rem;
+  top: 15%;
+  height: 70%;
+  width: 1px;
+  background: var(--border);
+}
+.nav-group a.nav-group-parent:hover,
+.nav-group a.nav-group-parent.active {
   color: var(--accent);
 }
 
