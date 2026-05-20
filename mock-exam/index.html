@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mock-eksamen – IDATT2002</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="icon" type="image/x-icon" href="../favicon.ico">
+  <style>
+    .exam-container { max-width: 860px; margin: 0 auto; }
+
+    .exam-header-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.6rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.85rem;
+      color: var(--text2);
+      line-height: 1.8;
+    }
+
+    .exam-header-box h2 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--text);
+      margin-bottom: 0.8rem;
+    }
+
+    .exam-header-box table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.83rem;
+    }
+
+    .exam-header-box td {
+      padding: 0.3rem 0.6rem 0.3rem 0;
+      vertical-align: top;
+    }
+
+    .exam-header-box td:first-child {
+      color: var(--text2);
+      width: 200px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+    }
+
+    .timer-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.4rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .timer-display {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.4rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .timer-display.warn { color: var(--warn); }
+    .timer-display.danger { color: var(--danger); }
+
+    .timer-controls { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+    .oppgave {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.6rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .oppgave-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .oppgave-header h2 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      color: var(--accent);
+    }
+
+    .vekting {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      padding: 0.2rem 0.7rem;
+      border-radius: 20px;
+      border: 1px solid var(--warn);
+      color: var(--warn);
+    }
+
+    .deloppgave {
+      margin-bottom: 1.4rem;
+    }
+
+    .deloppgave h3 {
+      font-size: 0.9rem;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .deloppgave p {
+      font-size: 0.87rem;
+      color: var(--text2);
+      line-height: 1.7;
+      margin-bottom: 0.5rem;
+    }
+
+    .answer-area {
+      width: 100%;
+      min-height: 120px;
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.9rem;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.7;
+      resize: vertical;
+      margin-top: 0.5rem;
+      transition: border-color 0.2s;
+    }
+
+    .answer-area:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .answer-area.correct-bg { border-color: var(--accent2) !important; background: rgba(63,185,80,0.05); }
+    .answer-area.submitted { border-color: var(--border); background: #0d1117; color: var(--text2); }
+
+    /* Multiple choice */
+    .mc-options { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem; }
+
+    .mc-btn {
+      width: 100%;
+      text-align: left;
+      padding: 0.75rem 1rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'Sora', sans-serif;
+      font-size: 0.86rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      line-height: 1.5;
+    }
+
+    .mc-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(88,166,255,0.06); }
+    .mc-btn.selected { border-color: var(--accent); background: rgba(88,166,255,0.1); color: var(--accent); }
+    .mc-btn.correct { border-color: var(--accent2); background: rgba(63,185,80,0.12); color: var(--accent2); }
+    .mc-btn.wrong { border-color: var(--danger); background: rgba(248,81,73,0.1); color: var(--danger); }
+    .mc-btn:disabled { cursor: default; }
+
+    .relmod-box {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: #a5d6ff;
+      margin: 0.8rem 0;
+      white-space: pre;
+      line-height: 1.7;
+      overflow-x: auto;
+    }
+
+    /* Fasit */
+    #fasit-section { display: none; }
+
+    .fasit-block {
+      background: var(--surface);
+      border: 1px solid rgba(63,185,80,0.3);
+      border-radius: var(--radius);
+      padding: 1.6rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .fasit-block h2 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      color: var(--accent2);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .fasit-item { margin-bottom: 1.2rem; }
+
+    .fasit-item h3 {
+      font-size: 0.88rem;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+    }
+
+    .fasit-item p {
+      font-size: 0.85rem;
+      color: var(--text2);
+      line-height: 1.7;
+    }
+
+    .submit-section {
+      text-align: center;
+      padding: 2rem 0 1rem;
+    }
+
+    .submit-section p {
+      font-size: 0.85rem;
+      color: var(--text2);
+      margin-bottom: 1rem;
+    }
+
+    .er-diagram {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.2rem;
+      margin: 0.8rem 0;
+      font-size: 0.82rem;
+      color: var(--text2);
+      line-height: 1.9;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .er-diagram .entity { color: #a5d6ff; font-weight: 700; }
+    .er-diagram .attr { color: var(--text2); }
+    .er-diagram .mult { color: var(--warn); }
+    .er-diagram .rel { color: var(--accent2); }
+
+    .points-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      background: rgba(88,166,255,0.1);
+      border: 1px solid rgba(88,166,255,0.2);
+      color: var(--accent);
+      margin-left: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>📝 Mock-eksamen</h1>
+  <p>IDATT2002 – NTNU Databaser v26</p>
+  <nav>
+    <a href="/">🏠 Hjem</a>
+    <a href="/teori">📚 Teori</a>
+    <a href="/er">🗺️ ER & Relmod</a>
+    <a href="/sql">🔍 SQL</a>
+    <a href="/norm">📐 Normalisering & Teori</a>
+  </nav>
+</header>
+
+<div class="container exam-container">
+
+  <!-- EXAM HEADER -->
+  <div class="exam-header-box">
+    <h2>Eksamensoppgave i IDATT2002 – Databaser</h2>
+    <table>
+      <tr><td>Dato:</td><td>22. mai 2026</td></tr>
+      <tr><td>Tid:</td><td>09:00 – 13:00 (4 timer)</td></tr>
+      <tr><td>Hjelpemidler:</td><td>Kode E – Ingen hjelpemidler tillatt</td></tr>
+      <tr><td>Vekting:</td><td>Oppgave 1: 40% &nbsp;|&nbsp; Oppgave 2: 40% &nbsp;|&nbsp; Oppgave 3: 20%</td></tr>
+    </table>
+    <div class="callout" style="margin-top:1rem;">
+      Les oppgavene nøye og gjør dine egne antagelser. Presiser i besvarelsen hvilke forutsetninger du har lagt til grunn. Ingen håndtegninger – alt besvares her. Fasit vises når du klikker «Lever eksamen» nederst.
+    </div>
+  </div>
+
+  <!-- TIMER -->
+  <div class="timer-bar">
+    <div>
+      <div style="font-size:0.75rem; color:var(--text2); font-family:'JetBrains Mono',monospace; margin-bottom:0.2rem;">TID IGJEN</div>
+      <div class="timer-display" id="timer">4:00:00</div>
+    </div>
+    <div class="timer-controls">
+      <button class="btn btn-primary" onclick="startTimer()" id="start-btn">▶ Start timer</button>
+      <button class="btn btn-secondary" onclick="resetTimer()">↺ Reset</button>
+    </div>
+  </div>
+
+  <!-- ===================== OPPGAVE 1 ===================== -->
+  <div class="oppgave">
+    <div class="oppgave-header">
+      <h2>Oppgave 1 – Datamodellering og relasjonsmodellen</h2>
+      <span class="vekting">40%</span>
+    </div>
+
+    <p style="font-size:0.87rem; color:var(--text2); line-height:1.7; margin-bottom:1rem;">
+      ER-diagrammet nedenfor er en forenklet database for et <strong style="color:var(--text)">biblioteksystem</strong>. Systemet holder rede på bøker, forfattere, medlemmer og utlån. En bok kan ha én eller flere forfattere, og en forfatter kan ha skrevet flere bøker. Et medlem kan låne flere bøker over tid, og samme bok kan lånes ut flere ganger (men kun til én person av gangen). En bok tilhører én sjanger. En utlånsregistrering har en utlånsdato og en innleveringsfrist.
+    </p>
+
+    <div class="er-diagram">
+<span class="entity">SJANGER</span>
+  <span class="attr">sjangerNavn</span>
+  <span class="attr">beskrivelse</span>
+
+<span class="mult">1..1</span> ↕ <span class="rel">tilhører</span> ↕ <span class="mult">0..*</span>
+
+<span class="entity">BOK</span>
+  <span class="attr">tittel</span>
+  <span class="attr">utgivelsesår</span>
+  <span class="attr">antall_eksemplarer</span>
+
+<span class="mult">0..*</span> ↔ <span class="rel">skrevet_av</span> ↔ <span class="mult">1..*</span>
+
+<span class="entity">FORFATTER</span>
+  <span class="attr">fornavn</span>
+  <span class="attr">etternavn</span>
+  <span class="attr">nasjonalitet</span>
+
+<span class="mult">0..*</span> ↕ <span class="rel">låner</span> ↕ <span class="mult">1..1</span>
+
+<span class="entity">UTLÅN</span>
+  <span class="attr">utlånsdato</span>
+  <span class="attr">innleveringsfrist</span>
+  <span class="attr">returnert_dato</span>
+
+<span class="mult">1..1</span> ↔ <span class="rel">registrert_på</span> ↔ <span class="mult">0..*</span>
+
+<span class="entity">MEDLEM</span>
+  <span class="attr">navn</span>
+  <span class="attr">epost</span>
+  <span class="attr">telefon</span>
+  <span class="attr">registreringsdato</span></div>
+
+    <!-- 1a -->
+    <div class="deloppgave">
+      <h3>Oppgave 1a) <span class="points-badge">10p</span></h3>
+      <p>Primærnøkler er ikke tegnet inn i ER-diagrammet. Foreslå en primærnøkkel for hver entitetstype. Du kan utvide med nye attributter hvis du synes det er hensiktsmessig. Begrunn kort forslagene dine.</p>
+      <textarea class="answer-area" id="ans-1a" placeholder="Skriv svar her..."></textarea>
+    </div>
+
+    <!-- 1b - FLERVALG -->
+    <div class="deloppgave">
+      <h3>Oppgave 1b) <span class="points-badge">10p</span></h3>
+      <p>Oversett ER-diagrammet til relasjonell form. Understrek primærnøkler og marker fremmednøkler med *. Du skal ikke skrive CREATE TABLE eller foreslå datatyper.</p>
+      <textarea class="answer-area" id="ans-1b" placeholder="Eksempel:&#10;SJANGER(_sjangerNavn_, beskrivelse)&#10;BOK(...)&#10;..." style="min-height:180px;"></textarea>
+    </div>
+
+    <!-- 1c - FLERVALG -->
+    <div class="deloppgave">
+      <h3>Oppgave 1c) <span class="points-badge">flervalg</span></h3>
+      <p>En bok kan ha mange forfattere, og en forfatter kan ha skrevet mange bøker. Hvilken tabellstruktur er riktig oversettelse av denne mange-til-mange-relasjonen?</p>
+      <ul class="mc-options" id="mc-1c">
+        <li><button class="mc-btn" onclick="selectMC('mc-1c', 0)">BOK får en kolonne forfatter_id* som inneholder alle forfatterid-er separert med komma</button></li>
+        <li><button class="mc-btn" onclick="selectMC('mc-1c', 1)">Det opprettes en koblingstabell BOK_FORFATTER(bok_id*, forfatter_id*) med sammensatt primærnøkkel</button></li>
+        <li><button class="mc-btn" onclick="selectMC('mc-1c', 2)">FORFATTER får en kolonne bok_id* som fremmednøkkel til BOK</button></li>
+        <li><button class="mc-btn" onclick="selectMC('mc-1c', 3)">BOK og FORFATTER slås sammen til én tabell BOK_FORFATTER med alle attributter</button></li>
+      </ul>
+    </div>
+
+    <!-- 1d -->
+    <div class="deloppgave">
+      <h3>Oppgave 1d) <span class="points-badge">10p</span></h3>
+      <p>Biblioteket ønsker å registrere hvilke sjangere et medlem er interessert i, slik at de kan få anbefalinger. Et medlem kan være interessert i null eller flere sjangere. Foreslå med tekst en utvidelse av databasen for dette, og vis hvilke endringer i løsningen fra 1b) dette medfører. Du skal ikke tegne et nytt ER-diagram.</p>
+      <textarea class="answer-area" id="ans-1d" placeholder="Skriv svar her..."></textarea>
+    </div>
+  </div>
+
+  <!-- ===================== OPPGAVE 2 ===================== -->
+  <div class="oppgave">
+    <div class="oppgave-header">
+      <h2>Oppgave 2 – SQL</h2>
+      <span class="vekting">40%</span>
+    </div>
+
+    <p style="font-size:0.87rem; color:var(--text2); line-height:1.7; margin-bottom:0.8rem;">
+      Tabellene nedenfor representerer en forenklet database for et <strong style="color:var(--text)">kinoanlegg</strong>. Primærnøkler er streket under, fremmednøkler er markert med *.
+    </p>
+
+    <div class="relmod-box">KINO (kino_id, navn, by, antall_saler)
+SAL (sal_id, kino_id*, navn, kapasitet)
+FILM (film_id, tittel, sjanger, varighet_min, aldersgrense)
+VISNING (visning_id, film_id*, sal_id*, dato, tidspunkt, pris)
+BILLETT (billett_id, visning_id*, sete_nr, kjøpt_dato, rabattkode)</div>
+
+    <p style="font-size:0.84rem; color:var(--text2); margin-bottom:1rem; line-height:1.6;">
+      En visning er én konkret forestilling av én film i én sal på en gitt dato og tidspunkt. Et billett er knyttet til én visning. Attributtet rabattkode er NULL hvis ingen rabatt er brukt.
+    </p>
+
+    <!-- 2a - FLERVALG -->
+    <div class="deloppgave">
+      <h3>Oppgave 2a) <span class="points-badge">flervalg</span></h3>
+      <p>Skriv ut det totale antallet visninger kinoen med navn 'Filmpalasset' har i juni 2026. Hvilken spørring er riktig?</p>
+      <ul class="mc-options" id="mc-2a">
+        <li><button class="mc-btn" onclick="selectMC('mc-2a', 0)">SELECT COUNT(*) FROM VISNING WHERE navn = 'Filmpalasset' AND dato BETWEEN '2026-06-01' AND '2026-06-30';</button></li>
+        <li><button class="mc-btn" onclick="selectMC('mc-2a', 1)">SELECT COUNT(*) FROM VISNING v JOIN SAL s ON v.sal_id = s.sal_id JOIN KINO k ON s.kino_id = k.kino_id WHERE k.navn = 'Filmpalasset' AND v.dato BETWEEN '2026-06-01' AND '2026-06-30';</button></li>
+        <li><button class="mc-btn" onclick="selectMC('mc-2a', 2)">SELECT COUNT(*) FROM KINO WHERE navn = 'Filmpalasset' AND dato BETWEEN '2026-06-01' AND '2026-06-30';</button></li>
+        <li><button class="mc-btn" onclick="selectMC('mc-2a', 3)">SELECT SUM(visning_id) FROM VISNING JOIN KINO ON kino_id = kino_id WHERE navn = 'Filmpalasset';</button></li>
+      </ul>
+    </div>
+
+    <!-- 2b -->
+    <div class="deloppgave">
+      <h3>Oppgave 2b) <span class="points-badge">8p</span></h3>
+      <p>Skriv ut tittel, dato og tidspunkt for alle visninger av filmer med sjanger = 'komedie' som har solgt mer enn 50 billetter, sortert på dato stigende.</p>
+      <textarea class="answer-area" id="ans-2b" placeholder="Skriv SQL her..."></textarea>
+    </div>
+
+    <!-- 2c -->
+    <div class="deloppgave">
+      <h3>Oppgave 2c) <span class="points-badge">8p</span></h3>
+      <p>Finn tittel på alle filmer som ikke har noen visninger registrert i databasen.</p>
+      <textarea class="answer-area" id="ans-2c" placeholder="Skriv SQL her..."></textarea>
+    </div>
+
+    <!-- 2d -->
+    <div class="deloppgave">
+      <h3>Oppgave 2d) <span class="points-badge">8p</span></h3>
+      <p>Lag et VIEW kalt POPULAERE_FILMER som viser film_id, tittel og totalt antall solgte billetter for alle filmer som har solgt mer enn 100 billetter totalt på tvers av alle visninger.</p>
+      <textarea class="answer-area" id="ans-2d" placeholder="Skriv SQL her..."></textarea>
+    </div>
+
+    <!-- 2e - FLERVALG -->
+    <div class="deloppgave">
+      <h3>Oppgave 2e) <span class="points-badge">flervalg</span></h3>
+      <p>Du vil finne saler som har kapasitet til minst 100 seter, men der ingen billetter er solgt til noen visning i den salen. Hvilken tilnærming er riktig?</p>
+      <ul class="mc-options" id="mc-2e">
+        <li><button class="mc-btn" onclick="selectMC('mc-2e', 0)">SELECT sal_id FROM SAL WHERE kapasitet >= 100 AND sal_id NOT IN (SELECT sal_id FROM BILLETT);</button></li>
+        <li><button class="mc-btn" onclick="selectMC('mc-2e', 1)">SELECT s.sal_id, s.navn FROM SAL s LEFT JOIN VISNING v ON s.sal_id = v.sal_id LEFT JOIN BILLETT b ON v.visning_id = b.visning_id WHERE s.kapasitet >= 100 AND b.billett_id IS NULL;</button></li>
+        <li><button class="mc-btn" onclick="selectMC('mc-2e', 2)">SELECT sal_id FROM SAL WHERE kapasitet >= 100 GROUP BY sal_id HAVING COUNT(*) = 0;</button></li>
+        <li><button class="mc-btn" onclick="selectMC('mc-2e', 3)">SELECT sal_id FROM SAL WHERE kapasitet >= 100 AND sal_id NOT IN (SELECT sal_id FROM VISNING);</button></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ===================== OPPGAVE 3 ===================== -->
+  <div class="oppgave">
+    <div class="oppgave-header">
+      <h2>Oppgave 3 – Diverse</h2>
+      <span class="vekting">20%</span>
+    </div>
+
+    <!-- 3a - FLERVALG -->
+    <div class="deloppgave">
+      <h3>Oppgave 3a) <span class="points-badge">flervalg</span></h3>
+      <p>
+        Tabellen BILLETT har attributtet <code style="color:#a5d6ff; font-family:'JetBrains Mono',monospace;">rabattkode</code> som kan inneholde ulike typer rabattdata – noen billetter har en tekstkode, andre har en prosentsats, andre har ingen rabatt (NULL). En utvikler foreslår å erstatte <code style="color:#a5d6ff; font-family:'JetBrains Mono',monospace;">rabattkode</code> med en JSON-kolonne <code style="color:#a5d6ff; font-family:'JetBrains Mono',monospace;">rabatt_info</code> som kan inneholde varierende struktur per rad. Hva er den viktigste fordelen med dette?
+      </p>
+      <ul class="mc-options" id="mc-3a">
+        <li><button class="mc-btn" onclick="selectMC('mc-3a', 0)">JSON gjør spørringer raskere fordi databasen slipper å joine tabeller</button></li>
+        <li><button class="mc-btn" onclick="selectMC('mc-3a', 1)">JSON-kolonnen kan lagre varierende struktur per rad uten å endre tabellskjemaet</button></li>
+        <li><button class="mc-btn" onclick="selectMC('mc-3a', 2)">JSON sikrer referanseintegritet bedre enn vanlige fremmednøkler</button></li>
+        <li><button class="mc-btn" onclick="selectMC('mc-3a', 3)">JSON eliminerer behovet for primærnøkler i tabellen</button></li>
+      </ul>
+    </div>
+
+    <!-- 3b -->
+    <div class="deloppgave">
+      <h3>Oppgave 3b) <span class="points-badge">10p</span></h3>
+      <p>Er tabellen VISNING normalisert til og med 3NF? Gi en kort tekstlig begrunnelse med eventuelle antagelser.</p>
+      <div class="relmod-box">VISNING (visning_id, film_id*, sal_id*, dato, tidspunkt, pris)</div>
+      <textarea class="answer-area" id="ans-3b" placeholder="Skriv svar her..."></textarea>
+    </div>
+
+    <!-- 3c - FLERVALG -->
+    <div class="deloppgave">
+      <h3>Oppgave 3c) <span class="points-badge">flervalg</span></h3>
+      <p>
+        En billettkjøp-transaksjon gjør følgende: (1) sjekker at setet ikke er opptatt, (2) setter inn en ny rad i BILLETT. Systemet krasjer mellom steg 1 og 2. Hvilken ACID-egenskap sikrer at ingen halv transaksjon ligger igjen i databasen?
+      </p>
+      <ul class="mc-options" id="mc-3c">
+        <li><button class="mc-btn" onclick="selectMC('mc-3c', 0)">Durability – committede endringer overlever krasj</button></li>
+        <li><button class="mc-btn" onclick="selectMC('mc-3c', 1)">Consistency – databasen går fra én gyldig tilstand til en annen</button></li>
+        <li><button class="mc-btn" onclick="selectMC('mc-3c', 2)">Atomicity – hele transaksjonen utføres eller ingen del av den</button></li>
+        <li><button class="mc-btn" onclick="selectMC('mc-3c', 3)">Isolation – samtidige transaksjoner påvirker ikke hverandre</button></li>
+      </ul>
+    </div>
+
+    <!-- 3d - FLERVALG -->
+    <div class="deloppgave">
+      <h3>Oppgave 3d) <span class="points-badge">flervalg</span></h3>
+      <p>To brukere prøver å kjøpe siste ledige sete (sete_nr 14) på samme visning samtidig. Transaksjon T1 leser at sete 14 er ledig. Transaksjon T2 leser at sete 14 er ledig. T1 kjøper setet og committer. T2 kjøper også setet og committer – nå er setet dobbeltsolgt. Hvilket problem er dette et eksempel på?</p>
+      <ul class="mc-options" id="mc-3d">
+        <li><button class="mc-btn" onclick="selectMC('mc-3d', 0)">Dirty read – T2 leste data T1 ikke hadde committert ennå</button></li>
+        <li><button class="mc-btn" onclick="selectMC('mc-3d', 1)">Deadlock – T1 og T2 venter på hverandres låser</button></li>
+        <li><button class="mc-btn" onclick="selectMC('mc-3d', 2)">Non-repeatable read – T2 fikk ulikt resultat ved gjentatt lesing av samme rad</button></li>
+        <li><button class="mc-btn" onclick="selectMC('mc-3d', 3)">Lost update – begge leste samme verdi og skrev over hverandres endringer</button></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SUBMIT -->
+  <div class="submit-section">
+    <p>Når du er ferdig, klikk «Lever eksamen» for å se fasit og riktige svar på flervalgsspørsmålene.</p>
+    <button class="btn btn-primary" onclick="submitExam()" style="font-size:1rem; padding:0.8rem 2rem;">📬 Lever eksamen</button>
+  </div>
+
+  <!-- ===================== FASIT ===================== -->
+  <div id="fasit-section">
+    <div style="text-align:center; margin: 2rem 0 1.5rem;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--text2);">FLERVALGSCORE</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:3rem; font-weight:700; color:var(--accent);" id="mc-score-display"></div>
+      <div style="font-size:0.85rem; color:var(--text2);" id="mc-score-label"></div>
+    </div>
+
+    <div class="fasit-block">
+      <h2>// Fasit – Oppgave 1</h2>
+
+      <div class="fasit-item">
+        <h3>1a) Primærnøkler</h3>
+        <p><strong>SJANGER:</strong> sjangerNavn er naturlig PK (forutsatt unike sjangernavnavn). Alternativt surrogat-id sjanger_id.<br>
+        <strong>BOK:</strong> Surrogat-id bok_id anbefales – tittel er ikke unik (samme tittel kan gis ut flere ganger).<br>
+        <strong>FORFATTER:</strong> Surrogat-id forfatter_id – navn er ikke unik.<br>
+        <strong>UTLÅN:</strong> Surrogat-id utlan_id. Alternativt sammensatt av bok_id* + medlem_id* + utlånsdato, men surrogat er enklere.<br>
+        <strong>MEDLEM:</strong> Surrogat-id medlem_id, eller epost hvis den garanteres unik.</p>
+      </div>
+
+      <div class="fasit-item">
+        <h3>1b) Relasjonell form</h3>
+        <div class="relmod-box">SJANGER(<u>sjanger_id</u>, sjangerNavn, beskrivelse)
+BOK(<u>bok_id</u>, tittel, utgivelsesår, antall_eksemplarer, sjanger_id*)
+FORFATTER(<u>forfatter_id</u>, fornavn, etternavn, nasjonalitet)
+BOK_FORFATTER(<u>bok_id*</u>, <u>forfatter_id*</u>)
+MEDLEM(<u>medlem_id</u>, navn, epost, telefon, registreringsdato)
+UTLÅN(<u>utlan_id</u>, utlånsdato, innleveringsfrist, returnert_dato, bok_id*, medlem_id*)</div>
+        <p>BOK_FORFATTER er koblingstabellen for M:N-relasjonen mellom BOK og FORFATTER. UTLÅN kobler BOK og MEDLEM – en M:N med egne attributter.</p>
+      </div>
+
+      <div class="fasit-item">
+        <h3>1c) Flervalg – riktig svar: <span style="color:var(--accent2)">B</span></h3>
+        <p>En mange-til-mange-relasjon oversettes alltid med en koblingstabell. BOK_FORFATTER(bok_id*, forfatter_id*) med sammensatt PK er den korrekte løsningen. Alternativ A bryter 1NF (liste i én celle).</p>
+      </div>
+
+      <div class="fasit-item">
+        <h3>1d) Utvidelse – interesser</h3>
+        <p>Legg til en koblingstabell for M:N-relasjonen mellom MEDLEM og SJANGER:</p>
+        <div class="relmod-box">MEDLEM_SJANGER(<u>medlem_id*</u>, <u>sjanger_id*</u>)</div>
+        <p>Ingen endringer i eksisterende tabeller er nødvendig – bare legg til den nye koblingstabellen.</p>
+      </div>
+    </div>
+
+    <div class="fasit-block">
+      <h2>// Fasit – Oppgave 2</h2>
+
+      <div class="fasit-item">
+        <h3>2a) Flervalg – riktig svar: <span style="color:var(--accent2)">B</span></h3>
+        <p>dato og kino-navn ligger i ulike tabeller – du må joine VISNING → SAL → KINO. Alternativ A feiler fordi navn ikke finnes i VISNING.</p>
+      </div>
+
+      <div class="fasit-item">
+        <h3>2b) Komedier med over 50 billetter</h3>
+        <div class="relmod-box">SELECT f.tittel, v.dato, v.tidspunkt
+FROM FILM f
+INNER JOIN VISNING v ON f.film_id = v.film_id
+INNER JOIN BILLETT b ON v.visning_id = b.visning_id
+WHERE f.sjanger = 'komedie'
+GROUP BY v.visning_id, f.tittel, v.dato, v.tidspunkt
+HAVING COUNT(b.billett_id) > 50
+ORDER BY v.dato ASC;</div>
+      </div>
+
+      <div class="fasit-item">
+        <h3>2c) Filmer uten visninger</h3>
+        <div class="relmod-box">SELECT tittel FROM FILM
+WHERE film_id NOT IN (SELECT film_id FROM VISNING);
+
+-- Alternativt med LEFT JOIN:
+SELECT f.tittel
+FROM FILM f
+LEFT JOIN VISNING v ON f.film_id = v.film_id
+WHERE v.visning_id IS NULL;</div>
+      </div>
+
+      <div class="fasit-item">
+        <h3>2d) VIEW – populære filmer</h3>
+        <div class="relmod-box">CREATE VIEW POPULAERE_FILMER AS
+SELECT f.film_id, f.tittel, COUNT(b.billett_id) AS antall_solgte
+FROM FILM f
+INNER JOIN VISNING v ON f.film_id = v.film_id
+INNER JOIN BILLETT b ON v.visning_id = b.visning_id
+GROUP BY f.film_id, f.tittel
+HAVING COUNT(b.billett_id) > 100;</div>
+      </div>
+
+      <div class="fasit-item">
+        <h3>2e) Flervalg – riktig svar: <span style="color:var(--accent2)">B</span></h3>
+        <p>Billetter er ikke direkte knyttet til SAL – du må gå SAL → VISNING → BILLETT. Alternativ A er feil fordi BILLETT ikke har sal_id direkte. Alternativ D finner saler uten visninger, ikke saler uten billetter – det er ikke det samme.</p>
+      </div>
+    </div>
+
+    <div class="fasit-block">
+      <h2>// Fasit – Oppgave 3</h2>
+
+      <div class="fasit-item">
+        <h3>3a) Flervalg – riktig svar: <span style="color:var(--accent2)">B</span></h3>
+        <p>Fordelen med JSON her er fleksibel struktur per rad – noen rader kan ha {type: "prosentkode", verdi: 15}, andre {type: "kampanjekode", kode: "SOMMER26"}, uten å endre tabellskjemaet. Ulemper: vanskeligere å søke på, ingen RI for innholdet.</p>
+      </div>
+
+      <div class="fasit-item">
+        <h3>3b) Er VISNING i 3NF?</h3>
+        <p><strong>Ja</strong>, VISNING(visning_id, film_id*, sal_id*, dato, tidspunkt, pris) er i 3NF. PK er visning_id. Alle andre attributter (film_id, sal_id, dato, tidspunkt, pris) er direkte avhengige av visning_id – ingen er avhengig av et annet ikke-nøkkelattributt. Det finnes ingen transitiv avhengighet.</p>
+        <p><em>Merk: Man kan diskutere om pris avhenger av sal eller film, men slik tabellen er definert antas pris å være en egenskap ved akkurat denne visningen.</em></p>
+      </div>
+
+      <div class="fasit-item">
+        <h3>3c) Flervalg – riktig svar: <span style="color:var(--accent2)">C</span></h3>
+        <p>Atomicity = alt eller ingenting. Krasjer systemet midt i en transaksjon, rulles alle deloperasjoner tilbake. Ingen halv INSERT blir igjen.</p>
+      </div>
+
+      <div class="fasit-item">
+        <h3>3d) Flervalg – riktig svar: <span style="color:var(--accent2)">D</span></h3>
+        <p>Dette er et <em>lost update</em>-problem: begge leste samme tilstand (sete ledig), begge skrev basert på den tilstanden, og T1s endring ble overskrevet av T2. Dirty read ville vært hvis T2 leste en ucommittet endring. Non-repeatable read ville vært hvis T2 leste setet på nytt og fikk en annen verdi.</p>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top:1.5rem;">
+      <button class="btn btn-secondary" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Tilbake til toppen</button>
+      <a href="/" class="btn btn-primary" style="margin-left:0.5rem;">🏠 Hjem</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ===== TIMER =====
+let timerInterval = null;
+let secondsLeft = 4 * 60 * 60;
+let running = false;
+
+function formatTime(s) {
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  return `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+
+function startTimer() {
+  if (running) {
+    clearInterval(timerInterval);
+    running = false;
+    document.getElementById('start-btn').textContent = '▶ Fortsett';
+    return;
+  }
+  running = true;
+  document.getElementById('start-btn').textContent = '⏸ Pause';
+  timerInterval = setInterval(() => {
+    secondsLeft--;
+    const el = document.getElementById('timer');
+    el.textContent = formatTime(secondsLeft);
+    if (secondsLeft <= 600) el.className = 'timer-display danger';
+    else if (secondsLeft <= 1800) el.className = 'timer-display warn';
+    if (secondsLeft <= 0) {
+      clearInterval(timerInterval);
+      el.textContent = '0:00:00';
+      el.className = 'timer-display danger';
+      running = false;
+      document.getElementById('start-btn').textContent = '▶ Start timer';
+    }
+  }, 1000);
+}
+
+function resetTimer() {
+  clearInterval(timerInterval);
+  running = false;
+  secondsLeft = 4 * 60 * 60;
+  document.getElementById('timer').textContent = '4:00:00';
+  document.getElementById('timer').className = 'timer-display';
+  document.getElementById('start-btn').textContent = '▶ Start timer';
+}
+
+// ===== MULTIPLE CHOICE =====
+const mcAnswers = {
+  'mc-1c': 1,
+  'mc-2a': 1,
+  'mc-2e': 1,
+  'mc-3a': 1,
+  'mc-3c': 2,
+  'mc-3d': 3,
+};
+
+const mcSelected = {};
+
+function selectMC(groupId, idx) {
+  if (document.getElementById('fasit-section').style.display === 'block') return;
+  mcSelected[groupId] = idx;
+  const btns = document.querySelectorAll(`#${groupId} .mc-btn`);
+  btns.forEach((b, i) => {
+    b.classList.toggle('selected', i === idx);
+  });
+}
+
+// ===== SUBMIT =====
+function submitExam() {
+  // Stop timer
+  clearInterval(timerInterval);
+  running = false;
+
+  // Reveal MC answers
+  let correct = 0;
+  const total = Object.keys(mcAnswers).length;
+
+  Object.entries(mcAnswers).forEach(([groupId, correctIdx]) => {
+    const btns = document.querySelectorAll(`#${groupId} .mc-btn`);
+    const selected = mcSelected[groupId];
+    btns.forEach((b, i) => {
+      b.disabled = true;
+      b.classList.remove('selected');
+      if (i === correctIdx) b.classList.add('correct');
+      else if (i === selected && selected !== correctIdx) b.classList.add('wrong');
+    });
+    if (selected === correctIdx) correct++;
+  });
+
+  // Disable textareas
+  document.querySelectorAll('.answer-area').forEach(ta => {
+    ta.classList.add('submitted');
+    ta.readOnly = true;
+  });
+
+  // Show score
+  const pct = Math.round((correct / total) * 100);
+  document.getElementById('mc-score-display').textContent = `${correct}/${total}`;
+  document.getElementById('mc-score-label').textContent = `flervalg riktige (${pct}%)`;
+
+  // Show fasit
+  const fasit = document.getElementById('fasit-section');
+  fasit.style.display = 'block';
+  fasit.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // Hide submit button
+  document.querySelector('.submit-section').style.display = 'none';
+}
+</script>
+</body>
+</html>
